@@ -1,0 +1,193 @@
+fileFormatVersion: 2
+guid: b56473354e683a94d9dc8d87de439118
+timeCreated: 1478022371
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_001
+    100004: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_002
+    100006: Group_001
+    100008: Group_003
+    100010: Group_004
+    100012: Group_005
+    100014: Group_006
+    100016: Group_007
+    100018: Group_008
+    100020: Group_009
+    100022: Group_010
+    100024: Group_011
+    100026: Group_012
+    100028: Group_013
+    100030: Group_015
+    100032: Group_016
+    100034: Group_017
+    100036: Group_018
+    100038: Group_019
+    100040: Group_020
+    100042: Group_021
+    100044: Group_022
+    100046: Group_023
+    100048: Group_024
+    400000: //RootNode
+    400002: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_001
+    400004: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_002
+    400006: Group_001
+    400008: Group_003
+    400010: Group_004
+    400012: Group_005
+    400014: Group_006
+    400016: Group_007
+    400018: Group_008
+    400020: Group_009
+    400022: Group_010
+    400024: Group_011
+    400026: Group_012
+    400028: Group_013
+    400030: Group_015
+    400032: Group_016
+    400034: Group_017
+    400036: Group_018
+    400038: Group_019
+    400040: Group_020
+    400042: Group_021
+    400044: Group_022
+    400046: Group_023
+    400048: Group_024
+    2300000: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_001
+    2300002: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_002
+    2300004: Group_001
+    2300006: Group_003
+    2300008: Group_004
+    2300010: Group_005
+    2300012: Group_006
+    2300014: Group_007
+    2300016: Group_008
+    2300018: Group_009
+    2300020: Group_010
+    2300022: Group_011
+    2300024: Group_012
+    2300026: Group_013
+    2300028: Group_015
+    2300030: Group_016
+    2300032: Group_017
+    2300034: Group_018
+    2300036: Group_019
+    2300038: Group_020
+    2300040: Group_021
+    2300042: Group_022
+    2300044: Group_023
+    2300046: Group_024
+    3300000: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_001
+    3300002: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_002
+    3300004: Group_001
+    3300006: Group_003
+    3300008: Group_004
+    3300010: Group_005
+    3300012: Group_006
+    3300014: Group_007
+    3300016: Group_008
+    3300018: Group_009
+    3300020: Group_010
+    3300022: Group_011
+    3300024: Group_012
+    3300026: Group_013
+    3300028: Group_015
+    3300030: Group_016
+    3300032: Group_017
+    3300034: Group_018
+    3300036: Group_019
+    3300038: Group_020
+    3300040: Group_021
+    3300042: Group_022
+    3300044: Group_023
+    3300046: Group_024
+    4300000: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_001
+    4300002: Blank_Cover_Plate_for_WIC_slots_in_1800_3900_Cisco_routers_2_002
+    4300004: Group_001
+    4300006: Group_003
+    4300008: Group_004
+    4300010: Group_005
+    4300012: Group_006
+    4300014: Group_007
+    4300016: Group_008
+    4300018: Group_009
+    4300020: Group_010
+    4300022: Group_011
+    4300024: Group_012
+    4300026: Group_013
+    4300028: Group_015
+    4300030: Group_016
+    4300032: Group_017
+    4300034: Group_018
+    4300036: Group_019
+    4300038: Group_020
+    4300040: Group_021
+    4300042: Group_022
+    4300044: Group_023
+    4300046: Group_024
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
