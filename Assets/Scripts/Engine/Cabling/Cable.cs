@@ -40,7 +40,7 @@ public class Cable : MonoBehaviour
 	public void send(Packet packet, Port sender){
 		Debug.Log("CABLE: received packet ,forwarding..");
 		//if port1's device is the same as the sender..
-		if (sender.getDevice ().Equals (port1.getDevice ())) {
+		if (sender.getDevice().Equals (port1.getDevice())) {
 			port2.receive (packet);//send to port 2
 		} else {
 			port1.receive (packet);//send to port 1

@@ -4,88 +4,137 @@ using System.Collections;
 /*************************************************
  * 
  * Author: Jamal Mahmoud
- * Last Updated: 04/11/16
+ * Last Updated: 10/11/16
  * 
  * PC is used to run scripts for the PC GameObject
  * It can create and send packets out to the network 
- * It can connect a cable to the port it sends packets out through
+ * It can use it's port to send packets to other devices
  * 
  * ***********************************************/
 
 public class PC : MonoBehaviour {
 
-	public Packet packet;
+	private Packet packet;
 	public Port port;
 
-	private string defaultGate;
-	public string MAC;			//TODO quick fix
+	private string MAC;
 	private string IP;
 
 	void Awake(){
 		//port = GetComponent<Port> ();
-		port.pcInit("fe0/0", this, MAC);
+		port.pcInit("fe0/0", this);
 	}
 
 	//init
 	void Start (){
-		/*port = GetComponent<Port> ();*/
-
 	}
 
 	//
 	void Update (){
-		/*
-		if (Input.GetKey(KeyCode.Mouse0)) {
-			createPING ();
-		}*/
 	}
 
-	public void setIP(string ip){
-		IP = ip;
-	}
+	public void setIP(string ip)	{IP = ip;}
+	public string getIP()	{return IP;}
+	public void setMAC(string mac)	{MAC = mac;}
+	public string getMAC()	{ return MAC;}
 
-	public void setMAC(string mac){
-		MAC = mac;
-	}
 
-	public void setGate(string gate){
-		defaultGate = gate;
-	}
 
+
+    /// protocol list:
+    /// PING 
+    /// ARP 
+    /// etc...
+
+    //ping
 	public void pingEcho(string destIP){
 		packet = new Packet ("PING ECHO");
 		packet.netAccess.setMAC (MAC, "src");
-		packet.netAccess.setMAC ("5678", "dest");	//TODO this is just a test, better way to do this!
+		//packet.netAccess.setMAC ("5678", "dest");	//TODO this is just a test, better way to do this!
 		packet.internet.setIP (IP, "src");
 		packet.internet.setIP (destIP, "dest");
+        Debug.Log("PC: sending packet");
 		sendPacket (packet);
 	}
-
-	public void pingReply(string destIP, string destMAC){
+	private void pingReply(string destIP, string destMAC){
 		packet = new Packet ("PING REPLY");
 		packet.netAccess.setMAC (MAC, "src");
-		packet.netAccess.setMAC (destMAC, "dest");	//TODO this is just a test, better way to do this!
+		//packet.netAccess.setMAC (destMAC, "dest");	//TODO this is just a test, better way to do this!
 		packet.internet.setIP (IP, "src");
 		packet.internet.setIP (destIP, "dest");
 		sendPacket (packet);
 	}
 
-	public bool sendPacket(Packet packet){
+    //ARP
+	private void requestARP(Packet arpReq){
+        Debug.Log("PC: Creating an ARP request!");
 		if(port.isConnected()){
-			port.send (packet);
-			Debug.Log("PC: PACKET SENT");
-			return true;
+			port.send(arpReq);
+		}
+	}
+	private void replyARP(Packet arpRep){
+        Debug.Log("Replying to ARP!");
+
+        if (port.isConnected ()) {
+			port.send (arpRep);
+		}
+	}
+
+
+
+	public bool sendPacket(Packet packet){
+
+		if(port.isConnected()){
+            Debug.Log("PC: port is connected!");
+            if (port.isListed (packet)) {
+                Debug.Log("PC: MAC ADDRESS IS LISTED");
+                packet.netAccess.setMAC (port.getDestMAC (packet), "dest");	//set destination mac address
+				port.send (packet);
+				return true;
+			} else {
+				Debug.LogAssertion ("PC: ARP TABLE OUT OF DATE, REQUESTING>>>");
+				//send ARP Request!
+				Packet arpReq = new ARP("ARP REQUEST");
+                arpReq.internet.setIP(getIP(), "src");                          //set the src ip
+                arpReq.internet.setIP(packet.internet.getIP("dest"), "dest");   //set the dest ip
+                arpReq.netAccess.setMAC(MAC, "src");
+                requestARP(arpReq);
+				return false;
+			}
 		} else {
-			Debug.Log("PC: NOT Connected");
+			Debug.LogAssertion("PC: NOT Connected");
 			return false;
 		}
 	}
 
 	public void handlePacket(Packet packet){
 		Debug.LogAssertion ("PC: Packet Received! -> " + packet.type);
-		if (packet.type.Equals ("PING ECHO")) {
+
+        //if it is a ping 
+		if (packet.type.Equals ("PING ECHO"))
+        {
 			pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
 		}
+        //if it is an arp request
+		if (packet.type.Equals ("ARP REQUEST"))
+        {
+            if (packet.internet.getIP("dest").Equals(IP))
+            {
+                Packet arpRep = new ARP("ARP REPLY");
+                arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
+                arpRep.internet.setIP(IP, "src");
+                arpRep.netAccess.setMAC(MAC, "src");
+                arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
+                replyARP(arpRep);
+            }
+		}
+        //if it is an ARP Reply
+        if(packet.type.Equals("ARP REPLY"))
+        {
+            Debug.Log("PC: Processing ARP reply..");
+            port.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
+        }
+			
 	}
 
 	public Port getNewPort(){
@@ -95,10 +144,6 @@ public class PC : MonoBehaviour {
 		} else {
 			return null;
 		}
-	}
-
-	public string getIP(){
-		return IP;
 	}
 
 	/////////////////////////////////////////////
