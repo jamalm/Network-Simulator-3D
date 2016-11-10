@@ -118,8 +118,13 @@ public class Port : MonoBehaviour {
 
     public void updateARPTable(string IP, string MAC)
     {
+
         Debug.Log("PORT: Updated ARPTable!");
-        arpTable.Add(IP, MAC);
+       // if (!arpTable.ContainsKey(IP))
+       // {
+            arpTable.Add(IP, MAC);
+       // }
+        
     }
 
 

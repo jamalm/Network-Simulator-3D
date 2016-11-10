@@ -20,14 +20,7 @@ public class Switch : MonoBehaviour {
 	private List <string> macTable; //the mac table for forwarding packets
 
 	void Awake(){
-        //initialising the ports
-		ports [0].switchInit ("fe0/0", this);
-		ports [1].switchInit ("fe0/1", this);
-		ports [2].switchInit ("fe0/2", this);
-		ports [3].switchInit ("fe0/3", this);
-		ports [4].switchInit ("g0/0", this);
-        //init the mactable
-		macTable = new List<string> ();
+       
        /* for(int i = 0; i < ports.Count; i++)
         {
             macTable.Add("");
@@ -36,7 +29,15 @@ public class Switch : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	}
+        //initialising the ports
+        ports[0].switchInit("fe0/0", this);
+        ports[1].switchInit("fe0/1", this);
+        ports[2].switchInit("fe0/2", this);
+        ports[3].switchInit("fe0/3", this);
+        ports[4].switchInit("g0/0", this);
+        //init the mactable
+        macTable = new List<string>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -132,6 +133,7 @@ public class Switch : MonoBehaviour {
     //fetch new port to be attached to external device
     public Port getNewPort(string type) 
     {
+        Debug.Log("SWITCH: Finding new port to bind..");
         for(int i = 0; i < ports.Count; i++)
         {
             //if port is free and is compatible with cable
@@ -188,4 +190,15 @@ public class Switch : MonoBehaviour {
             
         }
 	}
+
+
+    public void plugPC(Cable cable ,Port PCPort, Port SwitchPort)
+    {
+        cable.plug(SwitchPort, PCPort);
+    }
+
+    public void plugRouter(Cable cable, Port RPort, Port SwitchPort)
+    {
+        cable.plug(SwitchPort, RPort);
+    }
 }

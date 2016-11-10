@@ -21,13 +21,14 @@ public class PC : MonoBehaviour {
 	private string IP;
 
 	void Awake(){
-		//port = GetComponent<Port> ();
-		port.pcInit("fe0/0", this);
-	}
+        //port = GetComponent<Port> ();
+        
+    }
 
 	//init
 	void Start (){
-	}
+        port.pcInit("fe0/0", this);
+    }
 
 	//
 	void Update (){
@@ -126,6 +127,10 @@ public class PC : MonoBehaviour {
                 arpRep.netAccess.setMAC(MAC, "src");
                 arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
                 replyARP(arpRep);
+            } 
+            else
+            {
+                Debug.Log("PC: dropping ARP request , not my ip!");
             }
 		}
         //if it is an ARP Reply
@@ -145,6 +150,10 @@ public class PC : MonoBehaviour {
 			return null;
 		}
 	}
+    public Port getPort()
+    {
+        return port;
+    }
 
 	/////////////////////////////////////////////
 	/// 
@@ -152,12 +161,32 @@ public class PC : MonoBehaviour {
 	/// ///////////////////////////////////////
 
 	public void TEST(int select){
-		if (select == 1) {
-			setIP ("192.168.1.2");
-			setMAC ("1234");
-		} else {
-			setIP ("192.168.1.3");
-			setMAC ("5678");
-		}
+        switch(select)
+        {
+            case 1:
+                {
+                    setIP("192.168.1.2");
+                    setMAC("1234");
+                    break;
+                }
+            case 2:
+                {
+                    setIP("192.168.1.3");
+                    setMAC("5678");
+                    break;
+                }
+            case 3:
+                {
+                    setIP("192.168.1.4");
+                    setMAC("9012");
+                    break;
+                }
+            case 4:
+                {
+                    setIP("192.168.1.5");
+                    setMAC("3456");
+                    break;
+                }
+        }
 	}
 }

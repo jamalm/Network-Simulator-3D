@@ -25,28 +25,26 @@ public class Router : MonoBehaviour {
 
 	void Awake(){
 
-		MAC = "1";
-		routingTable.Add ("192.168.1.1");
-		routingTable.Add ("192.168.1.2");
-		routingTable.Add ("192.168.1.3");
-
-		//ports [0] = GetComponent<Port> ();
-		ports [0].routerInit ("g0/0" ,this);
-		//ports [1] = GetComponent<Port> ();
-		ports [1].routerInit ("g0/1" ,this);
-		//ports [2] = GetComponent<Port> ();
-		ports [2].routerInit ("fe0/0" ,this);
 	}
 
 	// Use this for initialization
 	void Start () {
-		
-		//validIp = false;
-		/*ports.Add (GetComponent<Port>());
-		ports.Add(GetComponent<Port>());
-		ports.Add(GetComponent<Port>());*/
 
-	}
+        MAC = "1";
+        routingTable.Add("192.168.1.1");
+        routingTable.Add("192.168.1.2");
+        routingTable.Add("192.168.1.3");
+        routingTable.Add("192.168.1.4");
+        routingTable.Add("192.168.1.5");
+
+        //ports [0] = GetComponent<Port> ();
+        ports[0].routerInit("g0/0", this);
+        //ports [1] = GetComponent<Port> ();
+        ports[1].routerInit("g0/1", this);
+        //ports [2] = GetComponent<Port> ();
+        ports[2].routerInit("fe0/0", this);
+
+    }
 
 	// Update is called once per frame
 	void Update () {
