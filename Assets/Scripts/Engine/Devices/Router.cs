@@ -18,7 +18,7 @@ using System.Collections.Generic;
 public class Router : MonoBehaviour {
 
 	private List<string> routingTable = new List<string>();
-	public List<Port> ports = new List<Port> ();
+	public List<Port> ports;
 	private Packet packet;
 
 	private string MAC;

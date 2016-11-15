@@ -14,8 +14,8 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour {
 
-	private List<PC> pcs;           //list of pc's connected
-	private Router router;          //router connected
+	//private List<PC> pcs;           //list of pc's connected
+	//private Router router;          //router connected
 	public List<Port> ports;        //list of ports available
 	private List <string> macTable; //the mac table for forwarding packets
 
@@ -94,32 +94,33 @@ public class Switch : MonoBehaviour {
     private void UpdateMacTable()
     {
         bool update = false;
-        for(int i = 0; i < ports.Count; i++)
+        //perform update checks
+        for(int i = 0; i < ports.Count; i++)                                    //for each port
         {
-            if (ports[i].isConnected())
+            if (ports[i].isConnected())                                         //if port is connected
             {
-                if (macTable.Count == 0)
+                if (macTable.Count == 0)                                        //if there is no entries..
                 {
-                    update = true;
+                    update = true;                                              //update required
                 } else
                 {
-                    for (int j = 0; j < macTable.Count; j++)
+                    for (int j = 0; j < macTable.Count; j++)                    //for each entry
                     {
-                        if (macTable[j].Equals(ports[i].getMAC()))
+                        if (macTable[j].Equals(ports[i].getMAC()))              //if the mactable has the port's mac address
                         {
-                            update = false;
+                            update = false;                                     //no update needed
                             break;
                         }
                         else
                         {
-                            update = true;
+                            update = true;                                      //else update is required
                         }
                     }
                 }
                 
-                if (update)
+                if (update)                                                     //if update is required
                 {
-                    macTable.Add(ports[i].getMAC());
+                    macTable.Add(ports[i].getMAC());                            //add port's mac address
                     Debug.Log("SWITCH: updating MAC table"
                 + "\nSWITCH: Port is " + ports[i].getType()
                 + "\nSWITCH: MAC is " + ports[i].getMAC());
@@ -190,15 +191,9 @@ public class Switch : MonoBehaviour {
             
         }
 	}
-
-
-    public void plugPC(Cable cable ,Port PCPort, Port SwitchPort)
+    
+    public void plug(Cable cable ,Port endPort, Port startPort)
     {
-        cable.plug(SwitchPort, PCPort);
-    }
-
-    public void plugRouter(Cable cable, Port RPort, Port SwitchPort)
-    {
-        cable.plug(SwitchPort, RPort);
+        cable.plug(startPort, endPort);
     }
 }

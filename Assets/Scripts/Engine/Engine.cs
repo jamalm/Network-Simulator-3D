@@ -14,6 +14,11 @@ public class Engine : MonoBehaviour {
     public Router RouterPrefab;
 	public Cable CablePrefab;
 	public Port PortPrefab;
+    /*
+    public PCPort PCPortPrefab;
+    public RouterPort RouterPortPrefab;
+    public SwitchPort SwitchPortPrefab;
+    */
 
     public int numPCs;
     public int numRouters;
@@ -22,14 +27,21 @@ public class Engine : MonoBehaviour {
     private int cableCount;
     private bool connected;
 
+    public string ping;     //this is for testing
+
+    //formatting device placement
+    private float mapSize = 28;
+    private float pc_gap;
+
     void Awake()
     {
-        numPCs = 4;
-        numSwitches = 1;
-        numRouters = 1;
+        //numPCs = 4;
+        //numSwitches = 1;
+        //numRouters = 1;
 		numCables = (numPCs + numRouters + numSwitches) - 1;
         cableCount = 0;
         connected = false;
+        pc_gap = mapSize / numPCs+1;    //gap = size of the map / number of pcs
     }
 
 	// Use this for initialization
@@ -39,7 +51,7 @@ public class Engine : MonoBehaviour {
         //PC requires 1 port and a mac address
         for (int i = 0; i < numPCs; i++)
         {
-            pcs.Add((PC)Instantiate(PCPrefab, new Vector3(5 * i, 1, 10), transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
+            pcs.Add((PC)Instantiate(PCPrefab, new Vector3(-(mapSize/2) + (pc_gap*i), transform.position.y, (mapSize/2)) , transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
             pcs[i].port = (Port)Instantiate(PortPrefab, pcs[i].transform.position, pcs[i].transform.rotation);
         }
 
@@ -54,7 +66,6 @@ public class Engine : MonoBehaviour {
         for (int i = 0; i < numRouters; i++)
         {
             routers.Add((Router)Instantiate(RouterPrefab, new Vector3(5 * i, 5, -10), transform.rotation));
-            routers[i].transform.localScale -= new Vector3(0.9F, 0.9F, 0.9F);
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
@@ -91,7 +102,7 @@ public class Engine : MonoBehaviour {
         }
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
-            pcs[0].pingEcho("192.168.1.3");
+            pcs[0].pingEcho(ping);
         }
         
 	}
@@ -105,14 +116,19 @@ public class Engine : MonoBehaviour {
 
             for (int j = 0; j < pcs.Count; j++)
             {//for every pc
-                switches[i].plugPC(cables[cableCount], pcs[j].getNewPort(), switches[i].getNewPort("fe"));
+                switches[i].plug(cables[cableCount], pcs[j].getNewPort(), switches[i].getNewPort("fe"));
                 cableCount++;
                 Debug.Log("ENGINE: PC " + (j + 1) + " connected to switch " + (i + 1) + "!");
             }
             for (int j = 0; j < routers.Count; j++)
             {
-                switches[i].plugRouter(cables[cableCount], routers[j].getNewPort("g"), switches[i].getNewPort("g"));
+                switches[i].plug(cables[cableCount], routers[j].getNewPort("g"), switches[i].getNewPort("g"));
             }
         }
+    }
+
+    private void calculatePosition()
+    {
+        
     }
 }

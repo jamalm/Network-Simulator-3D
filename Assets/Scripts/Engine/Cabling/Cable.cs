@@ -31,8 +31,8 @@ public class Cable : MonoBehaviour
 	}
 
 	public void unplug(){
-		this.port1 = null;
-		this.port2 = null;
+		port1 = null;
+		port2 = null;
 	}
 
 

@@ -20,15 +20,32 @@ public class Port : MonoBehaviour {
 	private bool connected;		//bool for isConnected()
 	private Cable cable;		//cable attached to port
 	private string device;		//device port belongs to 
+    private string ip;
+    private string mac;
 
 	private string endPortMAC;			//MAC address of port on other end of cable (for switches)
 
 	private Dictionary<string, string> arpTable;	//Address Resolution Protocol table, storing all the available MAC addresses to this port
 
+
+    /*
+    public virtual void init(string type, PC pc)
+    {
+
+    }
+    public virtual void init(string type, Switch swit)
+    {
+    }
+    public virtual void init(string type, Router router)
+    {
+    }*/
+    
 	// devices that this port could be connected to 
 	private PC pc = null;
 	private Switch swit = null;
 	private Router router = null;
+
+    
 
 	//if port belongs to PC 
 	public void pcInit(string _type, PC pc){
@@ -61,8 +78,8 @@ public class Port : MonoBehaviour {
 		Debug.Log ("ROUTER PORT: Created!");
 	}
 
-	//initialise the ARP Table at the beginning of the application start up 
-	void Awake(){
+    //initialise the ARP Table at the beginning of the application start up 
+    void Awake(){
 		arpTable = new Dictionary<string, string> ();
 	}
 	void Start(){
@@ -73,19 +90,28 @@ public class Port : MonoBehaviour {
 
 	}
 
+    public void setIP(string ip)
+    {
+        this.ip = ip;
+    }
+    public string getIP()
+    {
+        return ip;
+    }
 	// sets the port to be the endports Device MAC address
-	public void setMAC(string mac){
-		endPortMAC = mac;
-	}
-	public string getMAC(){
+	public void setMAC(string mac) { this.mac = mac;}
+    
+	public string getEndMAC(){
 		return endPortMAC;
 	}
 
-	public string getType(){
-		return type;
-	}
+    public string getMAC() { return mac; }
 
+	public string getType() { return type; }
 
+    public void setType(string _type) { type = _type; }
+
+    
 	//returns the device this port is a child of 
 	private PC getPC(){
 		return pc;
@@ -99,24 +125,34 @@ public class Port : MonoBehaviour {
 		return device;
 	}
 		
-
+    public void setCable(Cable cable)
+    {
+        this.cable = cable;
+    }
 	//returns the cable that this port has plugged in
 	public Cable getCable(){
 		return cable;
 	}
 
+    public void setConnection(bool connected)
+    {
+        this.connected = connected;
+    }
+    // Checks if port is connected
+    public bool isConnected()
+    {
+        //Debug.Log ("PORT: port connected is " + this.connected);
+        return this.connected;
+    }
 
-	/// <summary>
-	/// Gets the MAC address associated with the destination IP .
-	/// </summary>
-	/// <returns>The MAC Address.</returns>
-	/// <param name="packet">Packet for sending.</param>
-	public string getDestMAC(Packet packet){
+    
+    // Gets the MAC address associated with the destination IP .
+    public virtual string getDestMAC(Packet packet){
 		string MAC = arpTable[packet.internet.getIP ("dest")];
 		return MAC;
 	}
 
-    public void updateARPTable(string IP, string MAC)
+    public virtual void updateARPTable(string IP, string MAC)
     {
 
         Debug.Log("PORT: Updated ARPTable!");
@@ -128,14 +164,10 @@ public class Port : MonoBehaviour {
     }
 
 
-	// Checks if port is connected
-	public bool isConnected(){
-		//Debug.Log ("PORT: port connected is " + this.connected);
-		return this.connected;
-	}
+	
 
 	// checks if the packet's destination ip has a mac address in the ARP table
-	public bool isListed(Packet packet){
+	public virtual bool isListed(Packet packet){
 		if (arpTable.ContainsKey (packet.internet.getIP ("dest"))) {
 			//checks if ip address is in arptable.
 			return true;
@@ -145,14 +177,15 @@ public class Port : MonoBehaviour {
 	}
 
 	//Send the specified packet.
-	public void send(Packet packet){
+	public virtual void send(Packet packet){
 		Debug.Log ("PORT: Sending packet through cable");
-		this.cable.send (packet, this);
+		cable.send (packet, this);
 	}
 
 	//handle incoming packets
-	public void receive(Packet packet){
+	public virtual void receive(Packet packet){
 		Debug.Log ("PORT: Receiving packet from cable");
+        
 		switch (device) {
 		case "pc":
 			{
@@ -173,14 +206,14 @@ public class Port : MonoBehaviour {
 	}
 
 	//plugs in the cable to the port
-	public void plugIn(Cable cable, Port endPort){
+	public virtual void plugIn(Cable cable, Port endPort){
 		
 		Debug.Log ("PORT: plugging in cable");
-		this.cable = cable;
-		endPort.cable = cable;
-		endPort.connected = true;
-		this.connected = true;
-
+		setCable(cable);
+		endPort.setCable(cable);
+		endPort.setConnection(true);
+        setConnection(true);
+        
 		//if the port belongs to a switch
 		if (device.Equals ("switch")) {
 			switch (endPort.device) {

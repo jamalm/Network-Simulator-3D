@@ -164,29 +164,29 @@ public class PC : MonoBehaviour {
         switch(select)
         {
             case 1:
-                {
-                    setIP("192.168.1.2");
-                    setMAC("1234");
-                    break;
-                }
+            {
+                setIP("192.168.1.2");
+                setMAC("1234");
+                break;
+            }
             case 2:
-                {
-                    setIP("192.168.1.3");
-                    setMAC("5678");
-                    break;
-                }
+            {
+                setIP("192.168.1.3");
+                setMAC("5678");
+                break;
+            }
             case 3:
-                {
-                    setIP("192.168.1.4");
-                    setMAC("9012");
-                    break;
-                }
+            {
+                setIP("192.168.1.4");
+                setMAC("9012");
+                break;
+            }
             case 4:
-                {
-                    setIP("192.168.1.5");
-                    setMAC("3456");
-                    break;
-                }
+            {
+                setIP("192.168.1.5");
+                setMAC("3456");
+                break;
+            }
         }
 	}
 }

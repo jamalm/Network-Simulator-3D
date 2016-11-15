@@ -60,6 +60,13 @@ MonoBehaviour:
     type: 2}
   PortPrefab: {fileID: 114000013786531402, guid: ac651dc3cdc9c0349a5687864231e411,
     type: 2}
+  PCPortPrefab: {fileID: 114000013041304320, guid: f8574cc6b4072ac4fa91a5dcf64e45cf,
+    type: 2}
+  RouterPortPrefab: {fileID: 114000013781523302, guid: d5c97d8c62fcbd646b6e9dfbd597170c,
+    type: 2}
+  SwitchPortPrefab: {fileID: 114000013587242488, guid: a530a14d149dccf4094f4f128be6bc12,
+    type: 2}
   numPCs: 4
   numRouters: 1
   numSwitches: 1
+  ping: 
