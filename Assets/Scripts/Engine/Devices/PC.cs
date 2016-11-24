@@ -13,9 +13,8 @@ using System.Collections;
  * ***********************************************/
 
 public class PC : MonoBehaviour {
-
-	private Packet packet;
 	public Port port;
+    public Ping ping;
 
 	private string MAC;
 	private string IP;
@@ -28,6 +27,7 @@ public class PC : MonoBehaviour {
 	//init
 	void Start (){
         port.pcInit("fe0/0", this);
+        ping = new Ping(this);
     }
 
 	//
@@ -38,6 +38,11 @@ public class PC : MonoBehaviour {
 	public string getIP()	{return IP;}
 	public void setMAC(string mac)	{MAC = mac;}
 	public string getMAC()	{ return MAC;}
+    public Ping getPing()
+    {
+        return ping;
+    } 
+
 
 
 
@@ -47,6 +52,8 @@ public class PC : MonoBehaviour {
     /// ARP 
     /// etc...
 
+    
+    /*
     //ping
 	public void pingEcho(string destIP){
 		packet = new Packet ("PING ECHO");
@@ -64,7 +71,7 @@ public class PC : MonoBehaviour {
 		packet.internet.setIP (IP, "src");
 		packet.internet.setIP (destIP, "dest");
 		sendPacket (packet);
-	}
+	}*/
 
     //ARP
 	private void requestARP(Packet arpReq){
@@ -82,13 +89,14 @@ public class PC : MonoBehaviour {
 	}
 
 
+    //handles the data link layer, assigning mac addresses and forwarding through port
 
 	public bool sendPacket(Packet packet){
-
 		if(port.isConnected()){
             Debug.Log("PC: port is connected!");
             if (port.isListed (packet)) {
                 Debug.Log("PC: MAC ADDRESS IS LISTED");
+                packet.netAccess.setMAC(MAC, "src");
                 packet.netAccess.setMAC (port.getDestMAC (packet), "dest");	//set destination mac address
 				port.send (packet);
 				return true;
@@ -114,8 +122,14 @@ public class PC : MonoBehaviour {
         //if it is a ping 
 		if (packet.type.Equals ("PING ECHO"))
         {
-			pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
-		}
+            //pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
+            if (!sendPacket(ping.Reply(packet.internet.getIP("src"))))
+            {
+                //if packet doesn't send...
+                //TODO do something when the packet doesn't send
+                Debug.LogAssertion("PC: PACKET FAILED TO SEND");
+            }
+        }
         //if it is an arp request
 		if (packet.type.Equals ("ARP REQUEST"))
         {

@@ -21,8 +21,8 @@ public class Packet{
 		switch (type) {
 		case "PING ECHO":
 			{
-				app = null;
-				trans = new TransLayer ("TCP");
+				app = new AppLayer("");
+				trans = new TransLayer ("");
 				internet = new InternetLayer ("IP");
 				netAccess = new NALayer ("Ethernet");
 				this.type = type;
@@ -30,8 +30,8 @@ public class Packet{
 			}
 		case "PING REPLY":
 			{
-				app = null;
-				trans = new TransLayer ("TCP");
+				app = new AppLayer("PING");
+				trans = new TransLayer ("");
 				internet = new InternetLayer ("IP");
 				netAccess = new NALayer ("Ethernet");
 				this.type = type;

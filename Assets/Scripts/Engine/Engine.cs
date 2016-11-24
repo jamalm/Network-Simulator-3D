@@ -102,7 +102,7 @@ public class Engine : MonoBehaviour {
         }
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
-            pcs[0].pingEcho(ping);
+            pcs[0].sendPacket(pcs[0].getPing().Echo(ping));
         }
         
 	}

@@ -33,7 +33,7 @@ public class Test_Packet : MonoBehaviour
 	void Update(){
 		if(Input.GetKeyUp(KeyCode.Space)){
 			Debug.Log ("TEST_PACKET: SENDING PING...");
-            pc1.pingEcho("192.168.1.3");
+            pc1.getPing().Echo("192.168.1.3");
         }
 	}
 }
