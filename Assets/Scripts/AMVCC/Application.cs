@@ -21,15 +21,7 @@ public class Application : MonoBehaviour
 
     public void Notify(string event_path, Object o, params object[] data)
     {
-        Controller[] controller_list = GetAllControllers();
-        foreach(Controller c in controller_list)
-        {
-            c.OnNotification(event_path, o, data);
-        }
+        controller.OnNotification(event_path, o, data);
     }
-
-    private Controller[] GetAllControllers()
-    {
-        return GetComponentsInChildren<Controller>();
-    }
+    
 }

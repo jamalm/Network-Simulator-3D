@@ -10,7 +10,7 @@ public class PlayerModel : Entity
     public PlayerModel()
     {
         this.speed = 10;
-        position.Set(0 ,20 , -20);
+        position.Set(0 ,0 , 0);
     }
 
     public Vector3 getPosition()
@@ -24,10 +24,5 @@ public class PlayerModel : Entity
     public void setPosition(Vector3 position)
     {
         this.position = position;
-    }
-
-    public void changePosition(Vector3 position)
-    {
-        this.position += position;
     }
 }

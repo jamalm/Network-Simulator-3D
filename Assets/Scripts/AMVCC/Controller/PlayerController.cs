@@ -5,7 +5,7 @@ public class PlayerController : Entity
     //controls for player
     public void OnNotification(string event_path, Object o, params object[] data)
     {
-        Debug.Log("Inside player's controller notification");
+        Debug.Log("Inside player's controller notification: " + event_path);
         switch(event_path)
         {
             case WatchGuard.PlayerMovedForward:
