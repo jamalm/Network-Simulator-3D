@@ -9,7 +9,7 @@ public class PlayerModel : Entity
 
     public PlayerModel()
     {
-        this.speed = 10;
+        speed = 10;
         position.Set(0 ,0 , 0);
     }
 

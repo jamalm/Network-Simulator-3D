@@ -2,7 +2,7 @@
 
 public class PlayerView : Entity
 {
-    private Vector3 lastPos;
+   
     private void Start()
     {
 
@@ -17,41 +17,37 @@ public class PlayerView : Entity
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                app.Notify(WatchGuard.PlayerMovedUp, this);
+                app.Notify(PlayerNotify.PlayerMovedUp, this);
             }
             else
             {
-                app.Notify(WatchGuard.PlayerMovedForward, this);
+                app.Notify(PlayerNotify.PlayerMovedForward, this);
             }
             transform.Translate(app.model.player.getPosition());
         }
         if (Input.GetKey(KeyCode.A))
         {
-            app.Notify(WatchGuard.PlayerMovedLeft, this);
+            app.Notify(PlayerNotify.PlayerMovedLeft, this);
             transform.Translate(app.model.player.getPosition());
         }
         if (Input.GetKey(KeyCode.S))
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                app.Notify(WatchGuard.PlayerMovedDown, this);
+                app.Notify(PlayerNotify.PlayerMovedDown, this);
             }
             else
             {
-                app.Notify(WatchGuard.PlayerMovedBackward, this);
+                app.Notify(PlayerNotify.PlayerMovedBackward, this);
             }
             transform.Translate(app.model.player.getPosition());
 
         }
         if (Input.GetKey(KeyCode.D))
         {
-            app.Notify(WatchGuard.PlayerMovedRight, this);  
+            app.Notify(PlayerNotify.PlayerMovedRight, this);  
             transform.Translate(app.model.player.getPosition());
         }
-        
-        
-        
-
     }
 
 }

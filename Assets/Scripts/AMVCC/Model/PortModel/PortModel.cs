@@ -1,7 +1,17 @@
-﻿public class PortModel
+﻿public class PortModel : Entity
 {
-    
-    //different port type's models
-    public PortSModel switchPort;
-    public PortPModel pcPort;
+    public PCPortModel pport;
+    public RouterPortModel rport;
+    public SwitchPortModel sport;
+
+    private void Start()
+    {
+        pport = GetComponentInChildren<PCPortModel>();
+        rport = GetComponentInChildren<RouterPortModel>();
+        sport = GetComponentInChildren<SwitchPortModel>();
+    }
+    private void Update()
+    {
+        
+    }
 }
