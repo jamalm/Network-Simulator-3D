@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class Engine : MonoBehaviour {
@@ -14,11 +13,6 @@ public class Engine : MonoBehaviour {
     public Router RouterPrefab;
 	public Cable CablePrefab;
 	public Port PortPrefab;
-    /*
-    public PCPort PCPortPrefab;
-    public RouterPort RouterPortPrefab;
-    public SwitchPort SwitchPortPrefab;
-    */
 
     public int numPCs;
     public int numRouters;

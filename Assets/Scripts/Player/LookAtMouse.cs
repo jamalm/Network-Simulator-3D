@@ -124,6 +124,7 @@ public class LookAtMouse : MonoBehaviour
         if (rb)
             rb.freezeRotation = true;
         originalRotation = transform.localRotation;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public static float ClampAngle(float angle, float min, float max)
