@@ -102,7 +102,8 @@ public class Switch : MonoBehaviour {
                 if (macTable.Count == 0)                                        //if there is no entries..
                 {
                     update = true;                                              //update required
-                } else
+                }
+                else
                 {
                     for (int j = 0; j < macTable.Count; j++)                    //for each entry
                     {

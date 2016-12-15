@@ -38,10 +38,11 @@ public class PC : MonoBehaviour {
 	public string getIP()	{return IP;}
 	public void setMAC(string mac)	{MAC = mac;}
 	public string getMAC()	{ return MAC;}
-    public Ping getPing()
+
+    public void Ping(string IP)
     {
-        return ping;
-    } 
+        sendPacket(ping.Echo(IP));
+    }
 
 
 
