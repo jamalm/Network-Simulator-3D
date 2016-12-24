@@ -72,7 +72,7 @@ public class Engine : MonoBehaviour {
         for (int i = 0; i < numSwitches; i++)
         {
             switches.Add((Switch)Instantiate(SwitchPrefab, new Vector3(5 * i, -0.5f, 0), transform.rotation));
-            switches[i].transform.localScale -= new Vector3(0.9F, 0.9F, 0.9F);
+            //switches[i].transform.localScale -= new Vector3(0.9F, 0.9F, 0.9F);
             switches[i].ports.Add((Port)Instantiate(PortPrefab, switches[i].transform.position, switches[i].transform.rotation));
             for (int j = 0; j < pcs.Count; j++)
             {

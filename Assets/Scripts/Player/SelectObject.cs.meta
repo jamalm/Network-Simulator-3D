@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: cad48849f43f4e3478ef34c8c88b31c0
+timeCreated: 1482145283
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - crosshairTexture: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
