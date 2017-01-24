@@ -29,17 +29,19 @@ public class Engine : MonoBehaviour {
 
     void Awake()
     {
-        //numPCs = 4;
-        //numSwitches = 1;
-        //numRouters = 1;
-		numCables = (numPCs + numRouters + numSwitches) - 1;
-        cableCount = 0;
-        connected = false;
-        pc_gap = mapSize / numPCs+1;    //gap = size of the map / number of pcs
+        
+
     }
 
 	// Use this for initialization
 	void Start () {
+        numPCs = ConfigurationManager.config.numPCs;
+        numRouters = ConfigurationManager.config.numRouters;
+        numSwitches = ConfigurationManager.config.numSwitches;
+        numCables = (numPCs + numRouters + numSwitches) - 1;
+        cableCount = 0;
+        connected = false;
+        pc_gap = mapSize / numPCs + 1;    //gap = size of the map / number of pcs
 
         //load PCs
         //PC requires 1 port and a mac address
@@ -80,6 +82,7 @@ public class Engine : MonoBehaviour {
             }
         }
         loadCables();
+        SaveConfig();
     }
 	
 	// Update is called once per frame
@@ -92,6 +95,51 @@ public class Engine : MonoBehaviour {
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
             pcs[0].Ping(ping);
         }
+    }
+
+    public PC CreatePC(Transform transform)
+    {
+        PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
+        pc.port = (Port)Instantiate(PortPrefab, pc.transform.position, pc.transform.rotation);
+        return pc;
+    }
+    public PC LoadPC(Transform transform, PCData load)
+    {
+        PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
+        pc.port = (Port)Instantiate(PortPrefab, pc.transform.position, transform.rotation);
+        pc.Load(load);
+
+        return pc;
+    }
+
+    public Router CreateRouter(Transform transform, int numPorts)
+    {
+        Router router = (Router)Instantiate(RouterPrefab, transform.position, transform.rotation);
+        for(int i = 0; i < numPorts; i++)
+        {
+            router.ports.Add((Port)Instantiate(PortPrefab, router.transform.position, transform.rotation));
+        }
+        
+
+        return router;
+    }
+    public Router LoadRouter(Transform transform, RouterData load, int numPorts)
+    {
+        Router router = (Router)Instantiate(RouterPrefab, transform.position, transform.rotation);
+        for (int i = 0; i < numPorts; i++)
+        {
+            router.ports.Add((Port)Instantiate(PortPrefab, router.transform.position, transform.rotation));
+        }
+        router.Load(load);
+        return router;
+    }
+
+    public Switch CreateSwitch(Transform transform, int numPorts)
+    {
+        Switch swit = (Switch)Instantiate(SwitchPrefab, transform.position, transform.rotation);
+
+
+        return swit;
     }
 
     private void connect()
@@ -161,6 +209,24 @@ public class Engine : MonoBehaviour {
             }
             cables[i].transform.LookAt(Vector3.zero);
 
+        }
+    }
+
+
+
+    private void SaveConfig()
+    {
+        for(int i=0;i<pcs.Count;i++)
+        {
+            ConfigurationManager.config.pcs.Add(pcs[i].Save());
+        }
+        for(int i=0;i<routers.Count;i++)
+        {
+            ConfigurationManager.config.routers.Add(routers[i].Save());
+        }
+        for(int i = 0; i < switches.Count; i++)
+        {
+            ConfigurationManager.config.switches.Add(switches[i].Save());
         }
     }
 }

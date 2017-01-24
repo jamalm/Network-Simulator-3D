@@ -16,10 +16,28 @@ public class PC : MonoBehaviour {
 	public Port port;
     public Ping ping;
 
-	private string MAC;
-	private string IP;
+	public string MAC;
+	public string IP;
 
-	void Awake(){
+    public void Load(PCData data)
+    {
+        ping = data.ping;
+        port.Load(data.port);
+        MAC = data.MAC;
+        IP = data.IP;
+    }
+    public PCData Save()
+    {
+        PCData data = new PCData();
+        data.ping = ping;
+        data.port = port.Save();
+        data.MAC = MAC;
+        data.IP = IP;
+
+        return data;
+    }
+
+    void Awake(){
         //port = GetComponent<Port> ();
         
     }
@@ -45,7 +63,7 @@ public class PC : MonoBehaviour {
     }
 
 
-
+    
 
 
     /// protocol list:

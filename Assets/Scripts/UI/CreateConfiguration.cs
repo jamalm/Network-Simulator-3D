@@ -41,7 +41,7 @@ public class CreateConfiguration : MonoBehaviour {
                     if (ConfigurationManager.config.numPCs > 0)
                     {
                         ConfigurationManager.config.numPCs--;
-                    } 
+                    }
                     else
                     {
                         ConfigurationManager.config.numPCs = 0;
@@ -76,4 +76,6 @@ public class CreateConfiguration : MonoBehaviour {
                 }
         }
     }
+
+    
 }

@@ -19,6 +19,26 @@ public class Switch : MonoBehaviour {
 	public List<Port> ports;        //list of ports available
 	private List <string> macTable; //the mac table for forwarding packets
 
+    public void Load(SwitchData data)
+    {
+        for (int i = 0; i < ports.Count; i++)
+        {
+            ports[i].Load(data.ports[i]);
+        }
+        macTable = data.mactable;
+    }
+    public SwitchData Save()
+    {
+        SwitchData data = new SwitchData();
+        data.mactable = macTable;
+        for(int i=0;i<ports.Count;i++)
+        {
+            data.ports[i] = ports[i].Save();
+        }
+
+        return data;
+    }
+
 	void Awake(){
        
        /* for(int i = 0; i < ports.Count; i++)

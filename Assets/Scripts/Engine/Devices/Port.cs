@@ -17,33 +17,53 @@ using System.Collections.Generic;
 public class Port : MonoBehaviour {
 
 	private string type;		//type of port
-	private bool connected;		//bool for isConnected()
-	private Cable cable;		//cable attached to port
-	private string device;		//device port belongs to 
-    private string ip;
-    private string mac;
+	public bool connected;		//bool for isConnected()
+	public Cable cable;		//cable attached to port
+	public string device;		//device port belongs to 
+    public string ip;
+    public string mac;
 
 	private string endPortMAC;			//MAC address of port on other end of cable (for switches)
 
 	private Dictionary<string, string> arpTable;	//Address Resolution Protocol table, storing all the available MAC addresses to this port
-
-
-    /*
-    public virtual void init(string type, PC pc)
-    {
-
-    }
-    public virtual void init(string type, Switch swit)
-    {
-    }
-    public virtual void init(string type, Router router)
-    {
-    }*/
-    
+ 
 	// devices that this port could be connected to 
 	private PC pc = null;
 	private Switch swit = null;
 	private Router router = null;
+
+    public void Load(PortData data)
+    {
+        type = data.type;
+        connected = data.connected;
+        cable = data.cable;
+        device = data.device;
+        ip = data.ip;
+        mac = data.mac;
+        endPortMAC = data.endPortMAC;
+        arpTable = data.arpTable;
+        //pc.Load(data.pc);
+        //swit.Load(data.swit);
+        //router.Load(data.router);
+    }
+    public PortData Save()
+    {
+        PortData data = new PortData();
+
+        data.type = type;
+        data.connected = connected;
+        data.cable = cable;
+        data.device = device;
+        data.ip = ip;
+        data.mac = mac;
+        data.endPortMAC = endPortMAC;
+        data.arpTable = arpTable;
+        //data.pc = pc.Save();
+        //data.swit = swit.Save();
+        //data.router = router.Save();
+
+        return data;
+    }
 
     
 
@@ -54,7 +74,9 @@ public class Port : MonoBehaviour {
 		device = "pc";
 		connected = false;
 		cable = null;
-		//arpTable.Add ("192.168.1.1", "1");
+        //arpTable.Add ("192.168.1.1", "1");
+        mac = pc.getMAC();
+        ip = pc.getIP();
 		Debug.Log ("PC PORT: Created!");
 	}
 

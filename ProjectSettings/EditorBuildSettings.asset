@@ -11,3 +11,7 @@ EditorBuildSettings:
     path: Assets/Scenes/EngineTest.unity
   - enabled: 1
     path: Assets/Scenes/UITest.unity
+  - enabled: 1
+    path: Assets/Scenes/ConfigTest.unity
+  - enabled: 1
+    path: Assets/Scenes/Inspector.unity

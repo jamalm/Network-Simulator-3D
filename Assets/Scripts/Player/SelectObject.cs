@@ -65,16 +65,20 @@ public class SelectObject : MonoBehaviour {
             if (obj.CompareTag("PC"))
             {
                 //pass in pc
+                ConfigurationManager.config.RunPC(obj.GetComponent<PC>());
             }
             else if (obj.CompareTag("Switch"))
             {
                 //pass in switch as inspected object
+                ConfigurationManager.config.RunSwitch(obj.GetComponent<Switch>());
             }
             else if (obj.CompareTag("Router"))
             {
                 //pass in router
+                ConfigurationManager.config.RunRouter(obj.GetComponent<Router>());
             }
-            s.LoadSceneByIndex(2);
+            s.LoadSceneByIndex(4);
+            
         }
         else
         {

@@ -23,6 +23,27 @@ public class Router : MonoBehaviour {
 
 	private string MAC;
 
+    public void Load(RouterData data)
+    {
+        routingTable = data.routingTable;
+        for(int i=0;i<ports.Count;i++)
+        {
+            ports[i].Load(data.ports[i]);
+        }
+        MAC = data.MAC;
+    }
+    public RouterData Save()
+    {
+        RouterData data = new RouterData();
+        data.MAC = MAC;
+        data.routingTable = routingTable;
+        for(int i=0;i<ports.Count;i++)
+        {
+            data.ports[i] = ports[i].Save();
+        }
+        return data;
+    }
+
 	void Awake(){
 
 	}
