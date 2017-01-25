@@ -7,8 +7,8 @@ using System.IO;
 public class ConfigurationManager : MonoBehaviour
 {
     public static ConfigurationManager config;
-    public DataLoader loader;
-    
+    private DataLoader loader;
+    public string filename;
 
     public List<PCData> pcs;
     public List<RouterData> routers;
@@ -25,11 +25,15 @@ public class ConfigurationManager : MonoBehaviour
 
     void Awake()
     {
-        
+        filename = "\newfile.ns";
         if(config == null)
         {
             DontDestroyOnLoad(gameObject);
-            config = this; 
+            config = this;
+            pcs = new List<PCData>();
+            routers = new List<RouterData>();
+            switches = new List<SwitchData>();
+            loader = GetComponent<DataLoader>();
         }
         else if(config != this)
         {
@@ -48,7 +52,8 @@ public class ConfigurationManager : MonoBehaviour
 
     public void Save(string filename)
     {
-        loader.Save(filename, pcs, routers, switches);
+        Configuration config = new Configuration(pcs, switches, routers);
+        loader.Save(filename, config);
     }
     public List<string> LoadAllFiles()
     {
@@ -69,6 +74,9 @@ public class ConfigurationManager : MonoBehaviour
             pcs = data.pcs;
             routers = data.routers;
             switches = data.switches;
+        } else
+        {
+            Debug.LogAssertion("ConfigurationManager: Unable to load data, file empty/missing");
         }
     }
 
@@ -93,20 +101,3 @@ public class ConfigurationManager : MonoBehaviour
     
 }
 
-//container class
-[Serializable]
-class Configuration
-{
-    public List<PCData> pcs;
-    public List<RouterData> routers;
-    public List<SwitchData> switches;
-
-    //data kept here
-    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers)
-    {
-        //constructor
-        this.pcs = pcs;
-        this.routers = routers;
-        this.switches = switches;
-    }
-}

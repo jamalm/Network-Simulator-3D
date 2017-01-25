@@ -1,5 +1,4 @@
-﻿
-public class Ping {
+﻿public class Ping {
 
     private ICMP icmp;
     private PC pc;

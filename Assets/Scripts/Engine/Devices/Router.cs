@@ -21,7 +21,7 @@ public class Router : MonoBehaviour {
 	public List<Port> ports;
 	private Packet packet;
 
-	private string MAC;
+	public string MAC;
 
     public void Load(RouterData data)
     {

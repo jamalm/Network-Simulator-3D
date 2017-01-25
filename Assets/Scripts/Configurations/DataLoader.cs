@@ -7,18 +7,16 @@ public class DataLoader : MonoBehaviour
 {
     
     //Saves data to a bin file
-    public void Save(string filename, List<PCData> pcs, List<RouterData> routers, List<SwitchData> switches)
+    public void Save(string filename, Configuration config)
     {
         //writer
         BinaryFormatter bf = new BinaryFormatter();
         // creates a file in a persistent location and naming it
         FileStream f = File.Open(Application.persistentDataPath + filename, FileMode.Create);
-
-        //create a data container
-        Configuration data = new Configuration(pcs, switches, routers);
-
+        
         //serialise it and save it to file
-        bf.Serialize(f, data);
+        bf.Serialize(f, config);
+        Debug.Log("Data Serialised at: " + Application.persistentDataPath);
         f.Close();
     }
 

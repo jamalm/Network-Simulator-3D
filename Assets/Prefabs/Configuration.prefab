@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000012378310486}
   - 114: {fileID: 114000011208976102}
+  - 114: {fileID: 114000013813978516}
   m_Layer: 0
   m_Name: Configuration
   m_TagString: Untagged
@@ -51,7 +52,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e6a310f9d0abb40838c9cca46e4cb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  filename: 
   pcs: []
   routers: []
   switches: []
-  cables: []
+  numPCs: 0
+  numRouters: 0
+  numSwitches: 0
+  inspectorPC:
+    port:
+      type: 
+      connected: 0
+      device: 
+      ip: 
+      mac: 
+      endPortMAC: 
+    MAC: 
+    IP: 
+  inspectorSwitch:
+    ports: []
+    mactable: []
+  inspectorRouter:
+    routingTable: []
+    ports: []
+    MAC: 
+  currentInspectable: 
+--- !u!114 &114000013813978516
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011425144576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6210378cc58ef2499b0376dfbac9489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

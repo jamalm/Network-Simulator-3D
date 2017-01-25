@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using System;
+
+[Serializable]
 public class PortData
 {
     public string type;
     public bool connected;
+    [NonSerialized]
     public Cable cable;
     public string device;
     public string ip;

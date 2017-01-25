@@ -677,6 +677,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 463266109}
+        m_MethodName: Load
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: /easy.ns
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &305572334
@@ -984,6 +995,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 420167783}
+--- !u!114 &463266109 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114000011208976102, guid: de810dc89457788499dd9fbb8c4db11d,
+    type: 2}
+  m_PrefabInternal: {fileID: 1661976982}
+  m_Script: {fileID: 11500000, guid: 08e6a310f9d0abb40838c9cca46e4cb6, type: 3}
 --- !u!1 &485225664
 GameObject:
   m_ObjectHideFlags: 0
