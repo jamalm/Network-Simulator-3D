@@ -8,6 +8,7 @@ public class Configuration
     public List<PCData> pcs;
     public List<RouterData> routers;
     public List<SwitchData> switches;
+    
 
     //data kept here
     public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers)

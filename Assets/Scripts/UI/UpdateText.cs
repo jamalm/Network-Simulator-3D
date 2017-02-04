@@ -1,22 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class UpdateText : MonoBehaviour {
 
     private Text[] updateTexts;
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start () {
         updateTexts = GetComponentsInChildren<Text>();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        Refresh();
+        RefreshText();
 	}
 
     //updates the display of devices selected in game
-    private void Refresh()
+    private void RefreshText()
     {
         //order of text is :
         //Routers:0
@@ -33,7 +35,8 @@ public class UpdateText : MonoBehaviour {
         for(int i=0;i<newTexts.Length;i++)
         {
             //fill updated text with new information
-            updateTexts[i+1].text = newTexts[i];
+            updateTexts[i].text = newTexts[i];
         }
     }
+
 }

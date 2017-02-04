@@ -74,6 +74,9 @@ public class ConfigurationManager : MonoBehaviour
             pcs = data.pcs;
             routers = data.routers;
             switches = data.switches;
+            numPCs = pcs.Count;
+            numSwitches = switches.Count;
+            numRouters = routers.Count;
         } else
         {
             Debug.LogAssertion("ConfigurationManager: Unable to load data, file empty/missing");
