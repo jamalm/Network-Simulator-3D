@@ -89,26 +89,6 @@ public class CreateConfiguration : MonoBehaviour {
         }
     }
 
-    public void EditDevice(string device, int index)
-    {
-        switch(device)
-        {
-            case "pc":
-                {
-
-                    break;
-                }
-            case "router":
-                {
-                    break;
-                }
-            case "switch":
-                {
-                    break;
-                }
-        }
-    }
-
     public void CommitElements()
     {
         for (int i = 0; i < ConfigurationManager.config.numPCs; i++)
@@ -124,6 +104,4 @@ public class CreateConfiguration : MonoBehaviour {
             ConfigurationManager.config.switches.Add(switches[i]);
         }
     }
-
-    
 }
