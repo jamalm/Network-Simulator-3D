@@ -4,6 +4,6 @@ using System;
 [Serializable]
 public class SwitchData
 {
-    public List<PortData> ports;
-    public List<string> mactable;
+    public List<PortData> ports = new List<PortData>();
+    public List<string> mactable = new List<string>();
 }

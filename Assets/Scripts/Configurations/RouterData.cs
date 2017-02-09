@@ -4,7 +4,7 @@ using System;
 [Serializable]
 public class RouterData
 {
-    public List<string> routingTable;
-    public List<PortData> ports;
+    public List<string> routingTable = new List<string>();
+    public List<PortData> ports = new List<PortData>();
     public string MAC;
 }

@@ -25,7 +25,7 @@ public class ConfigurationManager : MonoBehaviour
 
     void Awake()
     {
-        filename = "\newfile.ns";
+        //filename = "\newfile.ns";
         if(config == null)
         {
             DontDestroyOnLoad(gameObject);

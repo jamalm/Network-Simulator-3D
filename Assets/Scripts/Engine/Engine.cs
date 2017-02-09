@@ -27,14 +27,18 @@ public class Engine : MonoBehaviour {
     private float mapSize = 28;
     private float pc_gap;
 
+
+    
     void Awake()
     {
-        
+        ConfigurationManager.config.Load("easy");
 
     }
 
 	// Use this for initialization
 	void Start () {
+
+        
         numPCs = ConfigurationManager.config.numPCs;
         numRouters = ConfigurationManager.config.numRouters;
         numSwitches = ConfigurationManager.config.numSwitches;
@@ -54,7 +58,7 @@ public class Engine : MonoBehaviour {
         //init PCS config
         for (int i = 0; i < pcs.Count; i++)
         {
-            pcs[i].TEST(i + 1);
+            pcs[i].Load(ConfigurationManager.config.pcs[i]);
         }
 
         //load Routers
@@ -66,8 +70,12 @@ public class Engine : MonoBehaviour {
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
         }
+        //init Routers Config
+        for(int i=0;i<routers.Count; i++)
+        {
+            routers[i].Load(ConfigurationManager.config.routers[i]);
+        }
 
-        
 
         //load Switches
         //switch requires 1 port + x ports where x is the number of PCs' 
@@ -75,18 +83,26 @@ public class Engine : MonoBehaviour {
         {
             switches.Add((Switch)Instantiate(SwitchPrefab, new Vector3(5 * i, -0.5f, 0), transform.rotation));
             //switches[i].transform.localScale -= new Vector3(0.9F, 0.9F, 0.9F);
+
             switches[i].ports.Add((Port)Instantiate(PortPrefab, switches[i].transform.position, switches[i].transform.rotation));
             for (int j = 0; j < pcs.Count; j++)
             {
                 switches[i].ports.Add((Port)Instantiate(PortPrefab, switches[i].transform.position, switches[i].transform.rotation));
             }
         }
+
+        for(int i=0;i<switches.Count;i++)
+        {
+            switches[i].Load(ConfigurationManager.config.switches[i]);
+        }
         loadCables();
-        SaveConfig();
+        //SaveConfig();
+        
     }
 	
 	// Update is called once per frame
 	void Update () {
+        /*
         if (!connected)
         {
             connect();
@@ -94,9 +110,9 @@ public class Engine : MonoBehaviour {
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
             pcs[0].Ping(ping);
-        }
+        }*/
     }
-
+    
     public PC CreatePC(Transform transform)
     {
         PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
@@ -137,8 +153,22 @@ public class Engine : MonoBehaviour {
     public Switch CreateSwitch(Transform transform, int numPorts)
     {
         Switch swit = (Switch)Instantiate(SwitchPrefab, transform.position, transform.rotation);
+        for(int i=0; i<numPorts; i++)
+        {
+            swit.ports.Add((Port)Instantiate(PortPrefab, swit.transform));
+        }
 
+        return swit;
+    }
 
+    public Switch LoadSwitch(Transform transform, SwitchData load, int numPorts)
+    {
+        Switch swit = (Switch)Instantiate(SwitchPrefab, transform.position, transform.rotation);
+        for (int i = 0; i < numPorts; i++)
+        {
+            swit.ports.Add((Port)Instantiate(PortPrefab, swit.transform));
+        }
+        swit.Load(load);
         return swit;
     }
 
@@ -212,7 +242,7 @@ public class Engine : MonoBehaviour {
         }
     }
 
-
+    
 
     private void SaveConfig()
     {
@@ -228,5 +258,13 @@ public class Engine : MonoBehaviour {
         {
             ConfigurationManager.config.switches.Add(switches[i].Save());
         }
+    }
+
+    public void LoadConfig(string filename)
+    {
+        ConfigurationManager.config.Load(filename);
+        numPCs = ConfigurationManager.config.numPCs;
+        numRouters = ConfigurationManager.config.numRouters;
+        numSwitches = ConfigurationManager.config.numSwitches;
     }
 }

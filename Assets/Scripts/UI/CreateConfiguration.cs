@@ -89,19 +89,11 @@ public class CreateConfiguration : MonoBehaviour {
         }
     }
 
+    //load elements into the config before starting
     public void CommitElements()
     {
-        for (int i = 0; i < ConfigurationManager.config.numPCs; i++)
-        {
-            ConfigurationManager.config.pcs.Add(pcs[i]);
-        }
-        for (int i = 0; i < ConfigurationManager.config.numRouters; i++)
-        {
-            ConfigurationManager.config.routers.Add(routers[i]);
-        }
-        for (int i = 0; i < ConfigurationManager.config.numSwitches; i++)
-        {
-            ConfigurationManager.config.switches.Add(switches[i]);
-        }
+        ConfigurationManager.config.pcs = pcs;
+        ConfigurationManager.config.routers = routers;
+        ConfigurationManager.config.switches = switches;
     }
 }

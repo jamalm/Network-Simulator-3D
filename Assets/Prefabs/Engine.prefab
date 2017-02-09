@@ -16,10 +16,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 4000010669654198}
-  - 114: {fileID: 114000012945650840}
+  - component: {fileID: 4000010669654198}
+  - component: {fileID: 114000012945650840}
+  - component: {fileID: 114920789453831164}
   m_Layer: 0
   m_Name: Engine
   m_TagString: Untagged
@@ -36,10 +37,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114000012945650840
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -51,6 +52,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8188901ae79e3914caa4387aa4735dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pcs: []
+  switches: []
+  routers: []
+  cables: []
   PCPrefab: {fileID: 114000012950487346, guid: 4dc6f3b8a04a46e4099cec3e3fe3b5c0, type: 2}
   SwitchPrefab: {fileID: 114000010946747468, guid: 9cf3492202babfb4198a0de1493fbba2,
     type: 2}
@@ -60,13 +65,19 @@ MonoBehaviour:
     type: 2}
   PortPrefab: {fileID: 114000013786531402, guid: ac651dc3cdc9c0349a5687864231e411,
     type: 2}
-  PCPortPrefab: {fileID: 114000013041304320, guid: f8574cc6b4072ac4fa91a5dcf64e45cf,
-    type: 2}
-  RouterPortPrefab: {fileID: 114000013781523302, guid: d5c97d8c62fcbd646b6e9dfbd597170c,
-    type: 2}
-  SwitchPortPrefab: {fileID: 114000013587242488, guid: a530a14d149dccf4094f4f128be6bc12,
-    type: 2}
   numPCs: 4
   numRouters: 1
   numSwitches: 1
   ping: 
+--- !u!114 &114920789453831164
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011942438110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ebbd78f354563469a930c1497bdc48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engine: {fileID: 114000012945650840}
