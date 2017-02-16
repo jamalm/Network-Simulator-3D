@@ -8,6 +8,10 @@ public class SelectObject : MonoBehaviour {
     private bool hitting;
     private GameObject obj;
 
+
+    public GameObject editWindow;
+    public EditScreen editScreen;
+
     public Texture2D crosshairTexture;
 
     //initialisation
@@ -17,6 +21,7 @@ public class SelectObject : MonoBehaviour {
         distance = 5;
         hitting = false;
         obj = null;
+        editScreen = GetComponentInChildren<EditScreen>();
     }
 
     // Update is called once per frame
@@ -59,25 +64,36 @@ public class SelectObject : MonoBehaviour {
     //add obj into next scene! 
     public void handleClick(GameObject obj)
     {
+        
         if (obj != null)
         {
-            LoadScene s = obj.GetComponent<LoadScene>();
+            
+            //LoadScene s = obj.GetComponent<LoadScene>();
             if (obj.CompareTag("PC"))
             {
+                editWindow.SetActive(true);
+                editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in pc
-                ConfigurationManager.config.RunPC(obj.GetComponent<PC>());
+                //ConfigurationManager.config.RunPC(obj.GetComponent<PC>());
+                editScreen.OpenScreen("pc");
             }
             else if (obj.CompareTag("Switch"))
             {
+                editWindow.SetActive(true);
+                editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in switch as inspected object
-                ConfigurationManager.config.RunSwitch(obj.GetComponent<Switch>());
+                //ConfigurationManager.config.RunSwitch(obj.GetComponent<Switch>());
+                editScreen.OpenScreen("switch");
             }
             else if (obj.CompareTag("Router"))
             {
+                editWindow.SetActive(true);
+                editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in router
-                ConfigurationManager.config.RunRouter(obj.GetComponent<Router>());
+                //ConfigurationManager.config.RunRouter(obj.GetComponent<Router>());
+                editScreen.OpenScreen("router");
             }
-            s.LoadSceneByIndex(4);
+            //s.LoadSceneByIndex(4);
             
         }
         else

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class Engine : MonoBehaviour {
 
+    public GraphicManager graphics;
+
     public List<PC> pcs = new List<PC>();
     public List<Switch> switches = new List<Switch>();
     public List<Router> routers = new List<Router>();
@@ -42,13 +44,19 @@ public class Engine : MonoBehaviour {
         cableCount = 0;
         connected = false;
         pc_gap = mapSize / numPCs + 1;    //gap = size of the map / number of pcs
+        Debug.Log("ENGINE: STARTED");
+        LoadScene();
+    }
 
+    public void LoadScene()
+    {
         //load PCs
         //PC requires 1 port and a mac address
         for (int i = 0; i < numPCs; i++)
         {
-            pcs.Add((PC)Instantiate(PCPrefab, new Vector3(-(mapSize/2) + (pc_gap*i), transform.position.y, (mapSize/2)) , transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
+            pcs.Add((PC)Instantiate(PCPrefab, new Vector3(-(mapSize / 2) + (pc_gap * i), transform.position.y, (mapSize / 2)), transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
             pcs[i].port = (Port)Instantiate(PortPrefab, pcs[i].transform.position, pcs[i].transform.rotation);
+            pcs[i].SetID("PC" + (i + 1));
         }
 
         //init PCS config
@@ -61,13 +69,14 @@ public class Engine : MonoBehaviour {
         //router requires 3 ports
         for (int i = 0; i < numRouters; i++)
         {
-            routers.Add((Router)Instantiate(RouterPrefab, new Vector3(5*i, 0, -10), Quaternion.Euler(-90, -90, 0)));
+            routers.Add((Router)Instantiate(RouterPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
             routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
+            routers[i].SetID("Router" + (i + 1));
         }
 
-        
+
 
         //load Switches
         //switch requires 1 port + x ports where x is the number of PCs' 
@@ -80,19 +89,21 @@ public class Engine : MonoBehaviour {
             {
                 switches[i].ports.Add((Port)Instantiate(PortPrefab, switches[i].transform.position, switches[i].transform.rotation));
             }
+            switches[i].SetID("Switch" + (i + 1));
         }
         loadCables();
-        SaveConfig();
+        //SaveConfig();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         if (!connected)
         {
             connect();
         }
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
+
             pcs[0].Ping(ping);
         }
     }
@@ -151,13 +162,36 @@ public class Engine : MonoBehaviour {
 
             for (int j = 0; j < pcs.Count; j++)
             {//for every pc
-                switches[i].plug(cables[cableCount], pcs[j].getNewPort(), switches[i].getNewPort("fe"));
-                cableCount++;
-                Debug.Log("ENGINE: PC " + (j + 1) + " connected to switch " + (i + 1) + "!");
+                Port port1, port2;
+                port1 = pcs[j].getNewPort();
+                port2 = switches[i].getNewPort("fe");
+                if(port1 !=null && port2 != null)
+                {
+                    switches[i].plug(cables[cableCount], port1, port2);
+                    cableCount++;
+                    Debug.Log("ENGINE: PC " + (j + 1) + " connected to switch " + (i + 1) + "!");
+                }
+                else
+                {
+                    //port is missing?
+                    Debug.LogAssertion("missing port? pc&switch connect", pcs[j]);
+                }
+                
             }
             for (int j = 0; j < routers.Count; j++)
             {
-                switches[i].plug(cables[cableCount], routers[j].getNewPort("g"), switches[i].getNewPort("g"));
+                Port port1, port2;
+                port1 = routers[j].getNewPort("g");
+                port2 = switches[i].getNewPort("g");
+                if(port1 !=null && port2 !=null)
+                {
+                    switches[i].plug(cables[cableCount], port1, port2);
+                }
+                else
+                {
+                    //port is missing?
+                    Debug.LogAssertion("missing port? router&switch connect", this);
+                }
             }
         }
     }

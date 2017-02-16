@@ -18,6 +18,9 @@ public class PC : MonoBehaviour {
 
 	public string MAC;
 	public string IP;
+    private string id;
+
+    
 
     public void Load(PCData data)
     {
@@ -52,6 +55,15 @@ public class PC : MonoBehaviour {
 	void Update (){
 	}
 
+    public void SetID(string id)
+    {
+        this.id = id;
+    }
+    public string GetID()
+    {
+        return id;
+    }
+
 	public void setIP(string ip)	{IP = ip;}
 	public string getIP()	{return IP;}
 	public void setMAC(string mac)	{MAC = mac;}
@@ -59,11 +71,38 @@ public class PC : MonoBehaviour {
 
     public void Ping(string IP)
     {
-        sendPacket(ping.Echo(IP));
+        
+        int count = 0;
+        int success = 0;
+        int failure = 0;
+        while(count < 4)
+        {
+            if (!sendPacket(ping.Echo(IP)))
+            {
+                failure++;
+                //if there is an active task on this, notify of failure
+                if(GetComponent<TaskWatcher>().isActive())
+                {
+                    GetComponent<TaskWatcher>().PINGFailure();
+                }
+            } 
+            else
+            {
+                success++;
+                if(GetComponent<TaskWatcher>().isActive())
+                {
+                    GetComponent<TaskWatcher>().PINGSuccess();
+                }
+            }
+            count++;
+        }
+        Debug.LogAssertion("PING: Successful: " + success);
+        Debug.LogAssertion("PING: failed: " + failure);
+        
     }
 
 
-    
+
 
 
     /// protocol list:
@@ -71,7 +110,7 @@ public class PC : MonoBehaviour {
     /// ARP 
     /// etc...
 
-    
+
     /*
     //ping
 	public void pingEcho(string destIP){
@@ -93,11 +132,11 @@ public class PC : MonoBehaviour {
 	}*/
 
     //ARP
-	private void requestARP(Packet arpReq){
+    private void requestARP(Packet arpReq){
         Debug.Log("PC: Creating an ARP request!");
 		if(port.isConnected()){
-			port.send(arpReq);
-		}
+            port.send(arpReq);
+		} 
 	}
 	private void replyARP(Packet arpRep){
         Debug.Log("Replying to ARP!");
@@ -127,6 +166,7 @@ public class PC : MonoBehaviour {
                 arpReq.internet.setIP(packet.internet.getIP("dest"), "dest");   //set the dest ip
                 arpReq.netAccess.setMAC(MAC, "src");
                 requestARP(arpReq);
+
 				return false;
 			}
 		} else {
@@ -160,10 +200,12 @@ public class PC : MonoBehaviour {
                 arpRep.netAccess.setMAC(MAC, "src");
                 arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
                 replyARP(arpRep);
+                
             } 
             else
             {
                 Debug.Log("PC: dropping ARP request , not my ip!");
+                
             }
 		}
         //if it is an ARP Reply
@@ -171,6 +213,7 @@ public class PC : MonoBehaviour {
         {
             Debug.Log("PC: Processing ARP reply..");
             port.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
+            
         }
 			
 	}

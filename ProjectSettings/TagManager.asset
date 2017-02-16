@@ -9,6 +9,8 @@ TagManager:
   - PC
   - Device
   - PauseMenu
+  - EditConfig
+  - Engine
   layers:
   - Default
   - TransparentFX

@@ -18,6 +18,7 @@ public class Switch : MonoBehaviour {
 	//private Router router;          //router connected
 	public List<Port> ports;        //list of ports available
 	private List <string> macTable; //the mac table for forwarding packets
+    private string id;
 
     public void Load(SwitchData data)
     {
@@ -40,29 +41,41 @@ public class Switch : MonoBehaviour {
     }
 
 	void Awake(){
-       
-       /* for(int i = 0; i < ports.Count; i++)
-        {
-            macTable.Add("");
-        }*/
-	}
+
+        /* for(int i = 0; i < ports.Count; i++)
+         {
+             macTable.Add("");
+         }*/
+        macTable = new List<string>();
+        ports = new List<Port>();
+    }
 
 	// Use this for initialization
 	void Start () {
         //initialising the ports
         ports[0].switchInit("fe0/0", this);
         ports[1].switchInit("fe0/1", this);
-        ports[2].switchInit("fe0/2", this);
-        ports[3].switchInit("fe0/3", this);
-        ports[4].switchInit("g0/0", this);
+        //ports[2].switchInit("fe0/2", this);
+        //ports[3].switchInit("fe0/3", this);
+        //ports[4].switchInit("g0/0", this);
         //init the mactable
-        macTable = new List<string>();
+        ports[2].switchInit("g0/0", this);
+
     }
 	
 	// Update is called once per frame
 	void Update () {
         UpdateMacTable();
 	}
+
+    public void SetID(string id)
+    {
+        this.id = id;
+    }
+    public string GetID()
+    {
+        return id;
+    }
 
 
     /*
@@ -115,40 +128,44 @@ public class Switch : MonoBehaviour {
     {
         bool update = false;
         //perform update checks
-        for(int i = 0; i < ports.Count; i++)                                    //for each port
+        if(ports != null)
         {
-            if (ports[i].isConnected())                                         //if port is connected
+            for (int i = 0; i < ports.Count; i++)                                    //for each port
             {
-                if (macTable.Count == 0)                                        //if there is no entries..
+                if (ports[i].isConnected())                                         //if port is connected
                 {
-                    update = true;                                              //update required
-                }
-                else
-                {
-                    for (int j = 0; j < macTable.Count; j++)                    //for each entry
+                    if (macTable.Count == 0)                                        //if there is no entries..
                     {
-                        if (macTable[j].Equals(ports[i].getMAC()))              //if the mactable has the port's mac address
+                        update = true;                                              //update required
+                    }
+                    else
+                    {
+                        for (int j = 0; j < macTable.Count; j++)                    //for each entry
                         {
-                            update = false;                                     //no update needed
-                            break;
-                        }
-                        else
-                        {
-                            update = true;                                      //else update is required
+                            if (macTable[j].Equals(ports[i].getMAC()))              //if the mactable has the port's mac address
+                            {
+                                update = false;                                     //no update needed
+                                break;
+                            }
+                            else
+                            {
+                                update = true;                                      //else update is required
+                            }
                         }
                     }
-                }
-                
-                if (update)                                                     //if update is required
-                {
-                    macTable.Add(ports[i].getMAC());                            //add port's mac address
-                    Debug.Log("SWITCH: updating MAC table"
-                + "\nSWITCH: Port is " + ports[i].getType()
-                + "\nSWITCH: MAC is " + ports[i].getMAC());
-                }
 
+                    if (update)                                                     //if update is required
+                    {
+                        macTable.Add(ports[i].getMAC());                            //add port's mac address
+                        Debug.Log("SWITCH: updating MAC table"
+                    + "\nSWITCH: Port is " + ports[i].getType()
+                    + "\nSWITCH: MAC is " + ports[i].getMAC());
+                    }
+
+                }
             }
         }
+        
         
     }
 

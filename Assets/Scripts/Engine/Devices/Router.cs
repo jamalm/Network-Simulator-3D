@@ -17,9 +17,10 @@ using System.Collections.Generic;
 
 public class Router : MonoBehaviour {
 
-	private List<string> routingTable = new List<string>();
+	private List<string> routingTable;
 	public List<Port> ports;
 	private Packet packet;
+    private string id;
 
 	private string MAC;
 
@@ -45,7 +46,8 @@ public class Router : MonoBehaviour {
     }
 
 	void Awake(){
-
+        routingTable = new List<string>();
+        ports = new List<Port>();
 	}
 
 	// Use this for initialization
@@ -72,7 +74,16 @@ public class Router : MonoBehaviour {
 		//checkForNewComputers ();
 	}
 
-	public string getMAC(){
+    public void SetID(string id)
+    {
+        this.id = id;
+    }
+    public string GetID()
+    {
+        return id;
+    }
+
+    public string getMAC(){
 		return MAC;
 	}
 

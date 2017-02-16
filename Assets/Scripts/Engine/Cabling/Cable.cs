@@ -37,13 +37,15 @@ public class Cable : MonoBehaviour
 
 
 	//checks to see who's port is who's
-	public void send(Packet packet, Port sender){
+	public bool send(Packet packet, Port sender){
 		Debug.Log("CABLE: received packet ,forwarding..");
 		//if port1's device is the same as the sender..
 		if (sender.getDevice().Equals (port1.getDevice())) {
 			port2.receive (packet);//send to port 2
+            return true;
 		} else {
 			port1.receive (packet);//send to port 1
+            return true;
 		}
 	}
 }

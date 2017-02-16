@@ -28,9 +28,9 @@ public class Port : MonoBehaviour {
 	private Dictionary<string, string> arpTable;	//Address Resolution Protocol table, storing all the available MAC addresses to this port
  
 	// devices that this port could be connected to 
-	private PC pc = null;
-	private Switch swit = null;
-	private Router router = null;
+	public PC pc = null;
+	public Switch swit = null;
+	public Router router = null;
 
     public void Load(PortData data)
     {
@@ -141,6 +141,10 @@ public class Port : MonoBehaviour {
 	private Router getRouter(){
 		return router;
 	}
+    private Switch getSwitch()
+    {
+        return swit;
+    }
 
 	//returns the ID of the device this port is a child of 
 	public string getDevice(){
@@ -198,10 +202,26 @@ public class Port : MonoBehaviour {
 		}
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//Send the specified packet.
 	public virtual void send(Packet packet){
 		Debug.Log ("PORT: Sending packet through cable");
-		cable.send (packet, this);
+
+        Animate(packet.type);
+        cable.send(packet, this);
+        
 	}
 
 	//handle incoming packets
@@ -265,5 +285,85 @@ public class Port : MonoBehaviour {
 		setMAC(null);
 		endPort.setMAC (null);
 	}
+
+
+    private void Animate(string type)
+    {
+        string to = "";
+        string from = "";
+        if (cable.port1 == this)
+        {
+            switch (cable.port2.device)
+            {
+                case "pc":
+                    {
+                        to = cable.port2.pc.GetID();
+                        break;
+                    }
+                case "router":
+                    {
+                        to = cable.port2.router.GetID();
+                        break;
+                    }
+                case "switch":
+                    {
+                        to = cable.port2.swit.GetID();
+                        break;
+                    }
+            }
+        }
+        else
+        {
+            switch (cable.port1.device)
+            {
+                case "pc":
+                    {
+                        to = cable.port1.pc.GetID();
+                        break;
+                    }
+                case "router":
+                    {
+                        to = cable.port1.router.GetID();
+                        break;
+                    }
+                case "switch":
+                    {
+                        to = cable.port1.swit.GetID();
+                        break;
+                    }
+            }
+        }
+
+        switch(device)
+        {
+            case "pc":
+                {
+                    from = pc.GetID();
+                    break;
+                }
+            case "router":
+                {
+                    from = router.GetID();
+                    break;
+                }
+            case "switch":
+                {
+                    from = swit.GetID();
+                    break;
+                }
+        }
+
+        if(type.Contains("PING"))
+        {
+
+            GraphicManager.graphics.Ping(from, to);
+        }
+        else if(type.Contains("ARP"))
+        {
+            GraphicManager.graphics.ARP(from, to);
+        }
+        
+        
+    }
 }
 

@@ -10,9 +10,9 @@ public class ConfigurationManager : MonoBehaviour
     public DataLoader loader;
     
 
-    public List<PCData> pcs;
-    public List<RouterData> routers;
-    public List<SwitchData> switches;
+    public List<PCData> pcs = new List<PCData>();
+    public List<RouterData> routers = new List<RouterData>();
+    public List<SwitchData> switches = new List<SwitchData>();
 
     public int numPCs;
     public int numRouters;
@@ -23,9 +23,9 @@ public class ConfigurationManager : MonoBehaviour
     public RouterData inspectorRouter;
     public string currentInspectable;
 
+    //singleton pattern
     void Awake()
     {
-        
         if(config == null)
         {
             DontDestroyOnLoad(gameObject);
@@ -97,16 +97,27 @@ public class ConfigurationManager : MonoBehaviour
 [Serializable]
 class Configuration
 {
+    public List<Task> tasks;
     public List<PCData> pcs;
     public List<RouterData> routers;
     public List<SwitchData> switches;
 
     //data kept here
+    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<Task> tasks)
+    {
+        //constructor
+        this.pcs = pcs;
+        this.routers = routers;
+        this.switches = switches;
+        this.tasks = tasks;
+    }
+
     public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers)
     {
         //constructor
         this.pcs = pcs;
         this.routers = routers;
         this.switches = switches;
+        tasks = null;
     }
 }
