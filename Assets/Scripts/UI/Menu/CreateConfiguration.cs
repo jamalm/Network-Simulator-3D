@@ -1,30 +1,40 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Collections.Generic;
 
-public class CreateConfiguration : MonoBehaviour {
+public class CreateConfiguration : MonoBehaviour
+{
+
+    public GameObject content;
+
+    public List<PCData> pcs = new List<PCData>();
+    public List<RouterData> routers = new List<RouterData>();
+    public List<SwitchData> switches = new List<SwitchData>();
 
     public void AddElement(Dropdown selection)
     {
         int index = selection.value;
-        switch(index)
+        switch (index)
         {
             case 0:
                 {
                     //pc
                     ConfigurationManager.config.numPCs++;
+                    pcs.Add(new PCData());
                     break;
                 }
             case 1:
                 {
                     //routers
                     ConfigurationManager.config.numRouters++;
+                    routers.Add(new RouterData());
                     break;
                 }
             case 2:
                 {
                     //switches
                     ConfigurationManager.config.numSwitches++;
+                    switches.Add(new SwitchData());
                     break;
                 }
         }
@@ -41,6 +51,7 @@ public class CreateConfiguration : MonoBehaviour {
                     if (ConfigurationManager.config.numPCs > 0)
                     {
                         ConfigurationManager.config.numPCs--;
+                        pcs.RemoveAt(ConfigurationManager.config.numPCs);
                     }
                     else
                     {
@@ -54,6 +65,7 @@ public class CreateConfiguration : MonoBehaviour {
                     if (ConfigurationManager.config.numRouters > 0)
                     {
                         ConfigurationManager.config.numRouters--;
+                        routers.RemoveAt(ConfigurationManager.config.numRouters);
                     }
                     else
                     {
@@ -67,6 +79,7 @@ public class CreateConfiguration : MonoBehaviour {
                     if (ConfigurationManager.config.numSwitches > 0)
                     {
                         ConfigurationManager.config.numSwitches--;
+                        switches.RemoveAt(ConfigurationManager.config.numSwitches);
                     }
                     else
                     {
@@ -77,5 +90,11 @@ public class CreateConfiguration : MonoBehaviour {
         }
     }
 
-    
+    //load elements into the config before starting
+    public void CommitElements()
+    {
+        ConfigurationManager.config.pcs = pcs;
+        ConfigurationManager.config.routers = routers;
+        ConfigurationManager.config.switches = switches;
+    }
 }

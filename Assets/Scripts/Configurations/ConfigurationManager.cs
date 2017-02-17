@@ -8,7 +8,7 @@ public class ConfigurationManager : MonoBehaviour
 {
     public static ConfigurationManager config;
     public DataLoader loader;
-    
+    public string filename;
 
     public List<PCData> pcs = new List<PCData>();
     public List<RouterData> routers = new List<RouterData>();
