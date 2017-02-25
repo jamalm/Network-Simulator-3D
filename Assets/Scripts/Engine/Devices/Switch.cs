@@ -55,12 +55,10 @@ public class Switch : MonoBehaviour {
         //initialising the ports
         ports[0].switchInit("fe0/0", this);
         ports[1].switchInit("fe0/1", this);
-        //ports[2].switchInit("fe0/2", this);
-        //ports[3].switchInit("fe0/3", this);
-        //ports[4].switchInit("g0/0", this);
+        ports[2].switchInit("fe0/2", this);
+        ports[3].switchInit("fe0/3", this);
+        ports[4].switchInit("g0/0", this);
         //init the mactable
-        ports[2].switchInit("g0/0", this);
-
     }
 	
 	// Update is called once per frame
@@ -157,7 +155,7 @@ public class Switch : MonoBehaviour {
                     if (update)                                                     //if update is required
                     {
                         macTable.Add(ports[i].getMAC());                            //add port's mac address
-                        Debug.Log("SWITCH: updating MAC table"
+                        Debug.Log(id + ": updating MAC table"
                     + "\nSWITCH: Port is " + ports[i].getType()
                     + "\nSWITCH: MAC is " + ports[i].getMAC());
                     }
@@ -172,7 +170,7 @@ public class Switch : MonoBehaviour {
     //fetch new port to be attached to external device
     public Port getNewPort(string type) 
     {
-        Debug.Log("SWITCH: Finding new port to bind..");
+        Debug.Log(id + ": Finding new port to bind..");
         for(int i = 0; i < ports.Count; i++)
         {
             //if port is free and is compatible with cable
@@ -208,17 +206,17 @@ public class Switch : MonoBehaviour {
 
     //forwards incoming packets
 	public void handlePacket(Packet packet, Port incomingPort){
-		Debug.Log ("Switch: Receiving packet");
+		Debug.Log (id + ": Receiving packet");
 
         //if mac is addressed to a broadcast, do so
 		if (packet.netAccess.getMAC ("dest").Equals ("FFFFFFFF")) {
-            Debug.Log("SWITCH: BroadCast MAC ADDRESS!");
+            Debug.Log(id + ": BroadCast MAC ADDRESS!");
             broadcast (packet, incomingPort);
 		}
         //else just unicast to MAC address user
         else
         {
-			Debug.Log("SWITCH: Sending packet to specific MAC: " + packet.netAccess.getMAC("dest"));
+			Debug.Log(id + ": Sending packet to specific MAC: " + packet.netAccess.getMAC("dest"));
             //iterate through mactable
 			for (int i = 0; i < macTable.Count; i++) {
                 //if dest mac matches one on table, forward

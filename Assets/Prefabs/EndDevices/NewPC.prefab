@@ -28,7 +28,7 @@ GameObject:
   - component: {fileID: 114242266484814200}
   - component: {fileID: 114947051532995720}
   m_Layer: 0
-  m_Name: PC
+  m_Name: NewPC
   m_TagString: PC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -164,5 +164,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4b3625e78d846f419a550c1107930f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: 
+  pc: {fileID: 0}
   mask: 
+  network: 
