@@ -28,6 +28,7 @@ GameObject:
   - component: {fileID: 114000012846296688}
   - component: {fileID: 114000013293414664}
   - component: {fileID: 114254620126846404}
+  - component: {fileID: 114054389740520412}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1703,6 +1704,19 @@ MonoBehaviour:
   m_Text: 'Save
 
 '
+--- !u!114 &114054389740520412
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010352673838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 796da363c5a7b7a42a7530bed1255a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  packetprefab: {fileID: 1047894446087254, guid: 1a85c49f2635db047ae440d27402809c,
+    type: 2}
 --- !u!114 &114061354097280368
 MonoBehaviour:
   m_ObjectHideFlags: 1

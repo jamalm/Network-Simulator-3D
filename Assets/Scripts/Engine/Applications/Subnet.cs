@@ -4,23 +4,27 @@ using UnityEngine;
 
 public class Subnet : MonoBehaviour {
 
-    public PC pc;
-    //this states the PC's subnet
+    //this states the device's subnet
     public string mask;
     public string network;
     public string broadcast;
     public string defaultGateway;
     public bool validMask;
+    public int CIDR;
     
 	// Use this for initialization
-	void Start () {
-        pc = GetComponent<PC>();
-        mask = "255.255.255.128";
+	void Start ()
+    {
+        mask = "255.255.255.248";
         validMask = ValidateMask(mask);
-        network = ResolveNetwork(pc.IP);
-        Debug.Log(pc.GetID() + ": Network is: " + network);
-        
-	}
+        if (!GetComponent<PC>().Equals(null))
+        {
+            network = ResolveNetwork(GetComponent<PC>().IP);
+            broadcast = ResolveBroadcast(GetComponent<PC>().IP);
+            Debug.Log(GetComponent<PC>().GetID() + ": Network is: " + network);
+        }
+        CalculateCIDR();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -93,10 +97,11 @@ public class Subnet : MonoBehaviour {
 
             netChunks[i] = ipBitChunks[i] & maskBitChunks[i];
 
+
             if (i != 3)
             {
                 net += netChunks[i] + ".";
-                defaultGateway += net;
+                defaultGateway += netChunks[i] + ".";
             }
             else
             {
@@ -110,11 +115,56 @@ public class Subnet : MonoBehaviour {
         return net;
     }
 
-    private string ResolveBroadcast(string network)
+    private string ResolveBroadcast(string ip)
     {
+        string[] ipChunks = ip.Split('.');
+        string[] maskChunks = mask.Split('.');
 
-        return "";
+        int[] maskBitChunks = new int[4];
+        int[] ipBitChunks = new int[4];
+        int[] broadChunks = new int[4];
+
+        string broadcast = "";
+
+        for(int i=0; i<4; i++)
+        {
+            maskBitChunks[i] = int.Parse(maskChunks[i]);
+            ipBitChunks[i] = int.Parse(ipChunks[i]);
+
+            //invert mask
+            maskBitChunks[i] = ~maskBitChunks[i];
+            //do OR operation on ip with inverse mask
+            int broad = ipBitChunks[i] | (maskBitChunks[i]);
+
+            string val = Convert.ToString(broad, 2);
+            val = val.Substring(Math.Max(val.Length - 8, 0)).PadLeft(8, '0');
+            broadChunks[i] = Convert.ToInt32(val, 2);
+            if (i != 3)
+            {
+                broadcast += broadChunks[i] + ".";
+
+            } else
+            {
+                broadcast += broadChunks[i];
+            }
+        }
+        return broadcast;
     }
 
+    void CalculateCIDR()
+    {
+        string[] bitString = mask.Split('.');
+        int[] bits = new int[4];
+
+        for(int i=0; i<4; i++)
+        {
+            bits[i] = int.Parse(bitString[i]);
+            string octet = Convert.ToString(bits[i],2);
+
+            //count the number of 1's in the mask
+            foreach (char c in octet)
+                if (c == '1') CIDR++;
+        }
+    }
 
 }

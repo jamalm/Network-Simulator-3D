@@ -219,7 +219,7 @@ public class Port : MonoBehaviour {
 	public virtual void send(Packet packet){
 		Debug.Log ("PORT: Sending packet through cable");
 
-        Animate(packet.type);
+        Animate(packet);
         cable.send(packet, this);
         
 	}
@@ -287,12 +287,16 @@ public class Port : MonoBehaviour {
 	}
 
 
-    private void Animate(string type)
+    private void Animate(Packet packet)
     {
+        //animate packet being sent across the wire
         string to = "";
         string from = "";
+
+        //find out who is receiver
         if (cable.port1 == this)
         {
+            //find port2's device
             switch (cable.port2.device)
             {
                 case "pc":
@@ -314,6 +318,7 @@ public class Port : MonoBehaviour {
         }
         else
         {
+            //else find port1's device
             switch (cable.port1.device)
             {
                 case "pc":
@@ -334,6 +339,7 @@ public class Port : MonoBehaviour {
             }
         }
 
+        //find out who it's from
         switch(device)
         {
             case "pc":
@@ -350,17 +356,17 @@ public class Port : MonoBehaviour {
                 {
                     from = swit.GetID();
                     break;
-                }
+                }                                
         }
 
+        //types of messages
         if(type.Contains("PING"))
         {
-
-            GraphicManager.graphics.Ping(from, to);
+            GraphicManager.graphics.Ping(from, to, packet);
         }
         else if(type.Contains("ARP"))
         {
-            GraphicManager.graphics.ARP(from, to);
+            GraphicManager.graphics.ARP(from, to, packet);
         }
         
         

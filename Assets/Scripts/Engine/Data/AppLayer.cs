@@ -4,7 +4,7 @@ public class AppLayer : Layer
 {
 	private string protocol;
 
-	public AppLayer (String protocol) {
+	public AppLayer (string protocol) {
 		setProtocol(protocol);
 	}
 

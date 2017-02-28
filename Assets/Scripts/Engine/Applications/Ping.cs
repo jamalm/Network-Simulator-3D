@@ -1,23 +1,46 @@
-﻿
-public class Ping {
+﻿using UnityEngine;
+using System.Collections;
 
-    private ICMP icmp;
-    private PC pc;
+public class Ping : MonoBehaviour
+{
+    public GameObject packetprefab;
+    PC pc;
 
-    public Ping(PC pc)
+    void Start()
     {
-        this.pc = pc;
+        pc = GetComponent<PC>();
     }
 
+    private void Update()
+    {
+
+    }
+    
     public Packet Echo(string IP)
     {
-        icmp = new ICMP("ECHO");
-        return icmp.CreatePacket(IP, pc);
+        GameObject pingPacket = Instantiate(packetprefab);
+        Packet packet = pingPacket.GetComponent<Packet>();
+        packet.CreatePacket("PING ECHO");
+        packet.internet.setIP(IP, "dest");
+        packet.internet.setIP(pc.IP, "src");
+        packet.gameObject.AddComponent<ICMP>();
+        ICMP icmp = packet.GetComponent<ICMP>();
+        icmp.CreateICMP("ECHO");
+
+        return packet;
     }
 
     public Packet Reply(string IP)
     {
-        icmp = new ICMP("REPLY");
-        return icmp.CreatePacket(IP, pc);
+        GameObject pingPacket = Instantiate(packetprefab);
+        Packet packet = pingPacket.GetComponent<Packet>();
+        packet.CreatePacket("PING REPLY");
+        packet.internet.setIP(IP, "dest");
+        packet.internet.setIP(pc.IP, "src");
+        packet.gameObject.AddComponent<ICMP>();
+        ICMP icmp = packet.GetComponent<ICMP>();
+        icmp.CreateICMP("REPLY");
+
+        return packet;
     }
 }

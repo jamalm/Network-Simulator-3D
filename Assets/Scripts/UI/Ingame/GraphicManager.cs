@@ -29,11 +29,12 @@ public class GraphicManager : MonoBehaviour
 
     }
 
-    public bool Ping(string from, string to)
+    public bool Ping(string from, string to, Packet packet)
     {
         Transform startPos = GetStart(from);
         Vector3 endPos = GetEnd(to);
-        GameObject ping = Instantiate(pingPrefab, new Vector3(startPos.position.x, 1.0f, startPos.position.z), Quaternion.identity);
+        GameObject ping = packet.gameObject;
+        //GameObject ping = Instantiate(pingPrefab, new Vector3(startPos.position.x, 1.0f, startPos.position.z), Quaternion.identity);
 
         StartCoroutine(Move(endPos, ping));
         //wait on co routine to finish
@@ -47,11 +48,12 @@ public class GraphicManager : MonoBehaviour
         }
     }
 
-    public bool ARP(string from, string to)
+    public bool ARP(string from, string to, Packet packet)
     {
         Transform startPos = GetStart(from);
         Vector3 endPos = GetEnd(to);
-        GameObject arp = Instantiate(arpPrefab, new Vector3(startPos.position.x, 1.0f, startPos.position.z), Quaternion.identity);
+        GameObject arp = packet.gameObject;
+        //GameObject arp = Instantiate(arpPrefab, new Vector3(startPos.position.x, 1.0f, startPos.position.z), Quaternion.identity);
 
         StartCoroutine(Move(endPos, arp));
         //wait on co routine to finish

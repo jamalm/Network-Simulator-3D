@@ -195,10 +195,11 @@ public class Router : MonoBehaviour {
 
 	public void response(string dest){
 		//TODO respond back to host
+        /*
 		packet = new Packet("PING");
 		packet.internet.setIP (routingTable[0], "src");
 		packet.internet.setIP (dest, "dest");
-
-
+        */
+        
 	}
 }

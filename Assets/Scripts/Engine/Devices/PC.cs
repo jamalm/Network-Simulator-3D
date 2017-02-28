@@ -21,6 +21,10 @@ public class PC : MonoBehaviour {
 	public string IP;
     private string id;
 
+    //for dhcp settings
+    public bool dhcpEnabled = false;
+    
+
     
 
     public void Load(PCData data)
@@ -49,7 +53,8 @@ public class PC : MonoBehaviour {
 	//init
 	void Start (){
         port.pcInit("fe0/0", this);
-        ping = new Ping(this);
+        ping = gameObject.GetComponent<Ping>();
+        
     }
 
 	//

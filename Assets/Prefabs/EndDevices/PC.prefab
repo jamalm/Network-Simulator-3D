@@ -27,6 +27,8 @@ GameObject:
   - component: {fileID: 114000010785121686}
   - component: {fileID: 114242266484814200}
   - component: {fileID: 114947051532995720}
+  - component: {fileID: 114841428624386998}
+  - component: {fileID: 114049047851943044}
   m_Layer: 0
   m_Name: PC
   m_TagString: PC
@@ -139,8 +141,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   port: {fileID: 0}
+  ping: {fileID: 0}
   MAC: 
   IP: 
+  dhcpEnabled: 0
+--- !u!114 &114049047851943044
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010282088858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dfc1acfdf5b2bd4185ebbf0d5323d75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  netmask: 
+  gateway: 
 --- !u!114 &114242266484814200
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -153,6 +170,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 0
+--- !u!114 &114841428624386998
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010282088858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 796da363c5a7b7a42a7530bed1255a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  packetprefab: {fileID: 1047894446087254, guid: 1a85c49f2635db047ae440d27402809c,
+    type: 2}
 --- !u!114 &114947051532995720
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -164,5 +194,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4b3625e78d846f419a550c1107930f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: 
   mask: 
+  network: 
+  broadcast: 
+  defaultGateway: 
+  validMask: 0
+  CIDR: 0
