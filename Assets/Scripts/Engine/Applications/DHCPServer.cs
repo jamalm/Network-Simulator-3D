@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +8,7 @@ public class DHCPServer : MonoBehaviour {
     public string netmask;
     public string gateway;
     public Dictionary<string, bool> IPList = new Dictionary<string, bool>();
+
 
     // Use this for initialization
     void Start () {
@@ -24,16 +25,28 @@ public class DHCPServer : MonoBehaviour {
     //handles incoming packets
     public void handle(Packet packet)
     {
-        switch(packet.type)
+        switch (packet.GetComponent<DHCP>().type)
         {
             case "DHCPDISCOVER":
                 {
+
+                    Debug.Log(GetComponent<PC>().GetID() + ": RECEIVED DHCP DISCOVER");
                     Offer(packet);
                     break;
                 }
             case "DHCPREQUEST":
                 {
+                    Debug.Log(GetComponent<PC>().GetID() + ": RECEIVED DHCP REQUEST");
                     Ack(packet);
+                    break;
+                }
+            case "DHCPRELEASE":
+                {
+                    break;
+                }
+            default:
+                {
+                    Debug.Log(GetComponent<PC>().GetID() + ": SERVER DROPPING DHCP PACKET " + packet.GetComponent<DHCP>().type);
                     break;
                 }
         }
@@ -43,13 +56,55 @@ public class DHCPServer : MonoBehaviour {
     {
         //fill in lease addr, mask, gateway, cliMac, 
         DHCP dhcp = packet.GetComponent<DHCP>();
+        dhcp.type = "DHCPOFFER";
         dhcp.cliMac = packet.netAccess.getMAC("src");
         dhcp.mask = netmask;
         dhcp.gateway = gateway;
+        if((dhcp.leaseAddr = GetLease()) == null)
+        {
+            //handle no leases left
+            Debug.LogAssertion("SERVERDHCP: NO LEASES LEFT");
+        } else
+        {
+            packet.netAccess.setMAC(GetComponent<PC>().MAC, "src");
+            packet.netAccess.setMAC(dhcp.cliMac, "dest");
+            packet.internet.setIP(gateway, "src");
+            packet.internet.setIP("255.255.255.255", "dest");
+            GetComponent<PC>().sendPacket(packet);
+        }
+        
     }
 
     private void Ack(Packet packet)
     {
+        IPList[packet.gameObject.GetComponent<DHCP>().cliAddr] = true;
+        packet.GetComponent<DHCP>().type = "DHCPACK";
+        packet.internet.setIP(packet.internet.getIP("src"), "dest");
+        packet.internet.setIP(gateway, "src");
+        packet.netAccess.setMAC(GetComponent<PC>().MAC, "src");
+        packet.netAccess.setMAC(packet.GetComponent<DHCP>().cliMac, "dest");
+        GetComponent<PC>().sendPacket(packet);
+    }
+
+    private string GetLease()
+    {
+
+        if (IPList != null)
+        {
+            var ip = IPList.FirstOrDefault(x => x.Value == false).Key;
+            if (ip != null)
+            {
+                IPList[ip] = true;
+                return ip;
+            }
+            else
+            {
+                return null;
+            }
+        } else
+        {
+            return null;
+        }
 
     }
 

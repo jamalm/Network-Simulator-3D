@@ -64,6 +64,10 @@ public class Switch : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         UpdateMacTable();
+        if (macTable.Count == ports.Count)
+        {
+            GameController.gameState.netState = GameController.NetworkState.ACTIVE;
+        }
 	}
 
     public void SetID(string id)
@@ -207,9 +211,18 @@ public class Switch : MonoBehaviour {
     //forwards incoming packets
 	public void handlePacket(Packet packet, Port incomingPort){
 		Debug.Log (id + ": Receiving packet");
+        if(packet.GetComponent<DHCP>())
+        {
+            DHCP dhcp = packet.GetComponent<DHCP>();
+            Debug.LogAssertion(id + ": Receiving DHCP PACKET of type: " + dhcp.type);
+        }
+        if(packet.GetComponent<DHCP>().type.Equals("DHCPACK"))
+        {
+            Debug.Log("");
+        }
 
         //if mac is addressed to a broadcast, do so
-		if (packet.netAccess.getMAC ("dest").Equals ("FFFFFFFF")) {
+		if (packet.netAccess.getMAC ("dest").Equals ("FF:FF:FF:FF:FF:FF")) {
             Debug.Log(id + ": BroadCast MAC ADDRESS!");
             broadcast (packet, incomingPort);
 		}

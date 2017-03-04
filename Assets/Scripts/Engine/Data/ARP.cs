@@ -10,7 +10,7 @@ public class ARP : Packet
 		internet = new InternetLayer ("IP");
 
 		if (type.Equals ("ARP REQUEST")) {
-			netAccess.setMAC ("FFFFFFFF", "dest");
+			netAccess.setMAC ("FF:FF:FF:FF:FF:FF", "dest");
 		} 
 	}
 }

@@ -6,16 +6,27 @@ public class Subnet : MonoBehaviour {
 
     //this states the device's subnet
     public string mask;
-    public string network;
-    public string broadcast;
-    public string defaultGateway;
+    public string network = "0.0.0.0";
+    public string broadcast = "255.255.255.255";
+    public string defaultGateway = "0.0.0.0";
     public bool validMask;
     public int CIDR;
     
 	// Use this for initialization
 	void Start ()
     {
-        mask = "255.255.255.248";
+        broadcast = "255.255.255";
+        network = "0.0.0.0";
+        defaultGateway = "0.0.0.0";
+        mask = "255.255.255.255";
+        if (GetComponent<DHCPServer>())
+        {
+            mask = "255.255.255.0";
+            GetComponent<PC>().IP = "192.168.1.1";
+            
+        }
+        
+        
         validMask = ValidateMask(mask);
         if (!GetComponent<PC>().Equals(null))
         {
@@ -24,6 +35,7 @@ public class Subnet : MonoBehaviour {
             Debug.Log(GetComponent<PC>().GetID() + ": Network is: " + network);
         }
         CalculateCIDR();
+        
     }
 	
 	// Update is called once per frame
@@ -81,7 +93,17 @@ public class Subnet : MonoBehaviour {
 
     private string ResolveNetwork(string dec)
     {
-
+        //for default gateway set up
+        bool setDefault;
+        if(defaultGateway.Equals("0.0.0.0"))
+        {
+            setDefault = true;
+            defaultGateway = "";
+        } else
+        {
+            setDefault = false;
+        }
+        
         string net = "";
         string[] ipChunks = dec.Split('.');
         string[] maskChunks = mask.Split('.');
@@ -101,13 +123,18 @@ public class Subnet : MonoBehaviour {
             if (i != 3)
             {
                 net += netChunks[i] + ".";
-                defaultGateway += netChunks[i] + ".";
+                if(setDefault)
+                    defaultGateway += netChunks[i] + ".";
             }
             else
             {
                 net += netChunks[i];
                 //just adding one to the network to define gateway
-                defaultGateway += (netChunks[i] + 1);
+                if(setDefault)
+                {
+                    defaultGateway += (netChunks[i] + 1);
+                }
+                
             }
 
         }
@@ -153,6 +180,7 @@ public class Subnet : MonoBehaviour {
 
     void CalculateCIDR()
     {
+        CIDR = 0;
         string[] bitString = mask.Split('.');
         int[] bits = new int[4];
 
@@ -165,6 +193,23 @@ public class Subnet : MonoBehaviour {
             foreach (char c in octet)
                 if (c == '1') CIDR++;
         }
+    }
+
+    public void SetConfiguration(DHCP dhcp)
+    {
+        //set ip
+        GetComponent<PC>().IP = dhcp.leaseAddr;
+        //set mask
+        mask = dhcp.mask;
+        validMask = ValidateMask(mask);
+        if (!GetComponent<PC>().Equals(null))
+        {
+            network = ResolveNetwork(GetComponent<PC>().IP);
+            broadcast = ResolveBroadcast(GetComponent<PC>().IP);
+            defaultGateway = dhcp.gateway;
+            Debug.Log(GetComponent<PC>().GetID() + ": Network is: " + network);
+        }
+        CalculateCIDR();
     }
 
 }

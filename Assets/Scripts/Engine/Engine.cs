@@ -58,11 +58,19 @@ public class Engine : MonoBehaviour {
             pcs[i].port = (Port)Instantiate(PortPrefab, pcs[i].transform.position, pcs[i].transform.rotation);
             pcs[i].SetID("PC" + (i + 1));
         }
-
+        
         //init PCS config
         for (int i = 0; i < pcs.Count; i++)
         {
-            pcs[i].TEST(i + 1);
+            if(i==0)
+            {
+                pcs[i].gameObject.AddComponent<DHCPServer>();
+            }
+            else
+            {
+                pcs[i].gameObject.AddComponent<DHCPClient>();
+            }
+            
         }
 
         //load Routers

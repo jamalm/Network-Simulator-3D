@@ -32,7 +32,7 @@ public class Packet : MonoBehaviour{
                     this.type = type;
                     break;
                 }
-            case "DHCPDISCOVER":
+            case "DHCP":
                 {
                     app = new AppLayer("DHCP");
                     trans = new TransLayer("UDP");

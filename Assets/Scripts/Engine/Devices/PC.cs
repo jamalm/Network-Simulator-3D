@@ -16,9 +16,10 @@ using System.Text.RegularExpressions;
 public class PC : MonoBehaviour {
 	public Port port;
     public Ping ping;
+    public Subnet subnet;
 
 	public string MAC;
-	public string IP;
+	public string IP = "0.0.0.0";
     private string id;
 
     //for dhcp settings
@@ -52,9 +53,24 @@ public class PC : MonoBehaviour {
 
 	//init
 	void Start (){
+        IP = "0.0.0.0";
+        //setup mac address
+        for (int i=0;i<6;i++)
+        {
+            if(i!= 5)
+            {
+                MAC += Random.Range(0, 99).ToString() + ":";
+
+            }
+            else
+            {
+                MAC += Random.Range(0, 99).ToString();
+            }
+        }
+        
         port.pcInit("fe0/0", this);
         ping = gameObject.GetComponent<Ping>();
-        
+        subnet = gameObject.GetComponent<Subnet>();
     }
 
 	//
@@ -144,7 +160,7 @@ public class PC : MonoBehaviour {
 	}*/
 
     //ARP
-    private void requestARP(Packet arpReq){
+    public void requestARP(Packet arpReq){
         Debug.Log(id + ": Creating an ARP request!");
 		if(port.isConnected()){
             port.send(arpReq);
@@ -196,11 +212,23 @@ public class PC : MonoBehaviour {
                         return false;
                     }
                 }
+                else if(packet.GetComponent<DHCP>())
+                {
+                    //if the packet has a dhcp component, forward
+                    port.send(packet);
+                    return true;
+                }
                 else
                 {
                     Debug.LogAssertion(id + ": Not on same subnet!");
                     return false;
                 }
+            }
+            else if (packet.GetComponent<DHCP>())
+            {
+                //if the packet contains a dhcp component, forward it on
+                port.send(packet);
+                return true;
             }
             else
             {
@@ -253,6 +281,18 @@ public class PC : MonoBehaviour {
             port.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
             
         }
+
+        //if this device is a DHCP server/client..
+        if(GetComponent<DHCPServer>())
+        {
+            
+            GetComponent<DHCPServer>().handle(packet);
+        }
+        else if(GetComponent<DHCPClient>())
+        {
+            
+            GetComponent<DHCPClient>().handle(packet);
+        }
 			
 	}
 
@@ -275,6 +315,7 @@ public class PC : MonoBehaviour {
 	/// ///////////////////////////////////////
 
 	public void TEST(int select){
+        
         switch(select)
         {
             case 1:
