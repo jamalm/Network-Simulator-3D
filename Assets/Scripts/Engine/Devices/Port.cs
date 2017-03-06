@@ -17,8 +17,8 @@ using System.Collections.Generic;
 public class Port : MonoBehaviour {
 
 	private string type;		//type of port
-	public bool connected;		//bool for isConnected()
-	public Cable cable;		//cable attached to port
+	public bool connected = false;		//bool for isConnected()
+	public Cable cable = null;		//cable attached to port
 	public string device;		//device port belongs to 
     public string ip;
     public string mac;
@@ -65,7 +65,7 @@ public class Port : MonoBehaviour {
         return data;
     }
 
-    
+    /*
 
 	//if port belongs to PC 
 	public void pcInit(string _type, PC pc){
@@ -99,17 +99,52 @@ public class Port : MonoBehaviour {
 		cable = null;
 		Debug.Log ("ROUTER PORT: Created!");
 	}
+    */
+    public void Init(string type)
+    {
+        this.type = type;
 
+        if(GetComponentInParent<PC>())
+        {
+            //if device is pc
+            device = "pc";
+            mac = GetComponentInParent<PC>().MAC;
+            ip = GetComponentInParent<PC>().IP;
+            pc = GetComponentInParent<PC>();
+            Debug.Log("PC PORT: Created!");
+
+        }
+        else if(GetComponentInParent<Switch>())
+        {
+            device = "switch";
+            swit = GetComponentInParent<Switch>();
+            Debug.Log("Switch PORT: Created!");
+        }
+        else if(GetComponentInParent<Router>())
+        {
+            device = "router";
+            router = GetComponentInParent<Router>();
+            Debug.Log("Router PORT: Created!");
+        }
+    }
     //initialise the ARP Table at the beginning of the application start up 
     void Awake(){
 		arpTable = new Dictionary<string, string> ();
-	}
+
+    }
 	void Start(){
-		
-	}
+
+        
+    }
 
 	void Update(){
-
+        if(connected)
+        {
+            GetComponent<PortStatus>().TurnOn();
+        } else
+        {
+            GetComponent<PortStatus>().TurnOff();
+        }
 	}
 
     public void setIP(string ip)
@@ -180,13 +215,8 @@ public class Port : MonoBehaviour {
 
     public virtual void updateARPTable(string IP, string MAC)
     {
-
         Debug.Log("PORT: Updated ARPTable!");
-       // if (!arpTable.ContainsKey(IP))
-       // {
-            arpTable.Add(IP, MAC);
-       // }
-        
+        arpTable.Add(IP, MAC);
     }
 
 
@@ -249,7 +279,6 @@ public class Port : MonoBehaviour {
 
 	//plugs in the cable to the port
 	public virtual void plugIn(Cable cable, Port endPort){
-		
 		Debug.Log ("PORT: plugging in cable");
 		setCable(cable);
 		endPort.setCable(cable);
@@ -277,13 +306,19 @@ public class Port : MonoBehaviour {
 		
 	//not tested
 	public void plugOut(Cable cable,Port endPort){
-		cable.unplug ();
+        cable.unplug ();
 		this.cable = null;
-		this.connected = false;
+		connected = false;
+        //TODO need to remove subnet details from routing table
+
+        endPort.cable.unplug();
 		endPort.cable = null;
 		endPort.connected = false;
+        //TODO same here
+
 		setMAC(null);
 		endPort.setMAC (null);
+
 	}
 
 

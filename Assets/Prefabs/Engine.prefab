@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114704294734433592}
   m_Layer: 0
   m_Name: Engine
-  m_TagString: Untagged
+  m_TagString: Engine
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,12 +64,12 @@ MonoBehaviour:
     type: 2}
   CablePrefab: {fileID: 114000011733917380, guid: 906c9a4d55a68434f8cb2932c094e746,
     type: 2}
-  PortPrefab: {fileID: 114000013786531402, guid: ac651dc3cdc9c0349a5687864231e411,
+  PortPrefab: {fileID: 114764814828859844, guid: 7ac8b8e3e8cfc854a96be2eb85fe16a1,
     type: 2}
   numPCs: 0
   numRouters: 0
   numSwitches: 0
-  ping: 
+  ping: 192.168.1.3
 --- !u!114 &114704294734433592
 MonoBehaviour:
   m_ObjectHideFlags: 1

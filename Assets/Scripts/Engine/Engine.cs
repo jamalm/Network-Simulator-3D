@@ -51,54 +51,39 @@ public class Engine : MonoBehaviour {
     public void LoadScene()
     {
         //load PCs
-        //PC requires 1 port and a mac address
+        
         for (int i = 0; i < numPCs; i++)
         {
-            pcs.Add((PC)Instantiate(PCPrefab, new Vector3(-(mapSize / 2) + (pc_gap * i), transform.position.y, (mapSize / 2)), transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
-            pcs[i].port = (Port)Instantiate(PortPrefab, pcs[i].transform.position, pcs[i].transform.rotation);
+            pcs.Add(Instantiate(PCPrefab, new Vector3(-(mapSize / 2) + (pc_gap * i), transform.position.y, (mapSize / 2)), transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
             pcs[i].SetID("PC" + (i + 1));
-        }
-        
-        //init PCS config
-        for (int i = 0; i < pcs.Count; i++)
-        {
             if(i==0)
             {
+                //if first pc, set as dhcp server
                 pcs[i].gameObject.AddComponent<DHCPServer>();
-            }
-            else
+            } else
             {
+                //otherwise its a client
                 pcs[i].gameObject.AddComponent<DHCPClient>();
             }
-            
         }
 
         //load Routers
-        //router requires 3 ports
         for (int i = 0; i < numRouters; i++)
         {
-            routers.Add((Router)Instantiate(RouterPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
-            routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
-            routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
-            routers[i].ports.Add((Port)Instantiate(PortPrefab, routers[i].transform.position, transform.rotation));
+            routers.Add(Instantiate(RouterPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
             routers[i].SetID("Router" + (i + 1));
         }
 
 
 
         //load Switches
-        //switch requires 1 port + x ports where x is the number of PCs' 
         for (int i = 0; i < numSwitches; i++)
         {
             switches.Add((Switch)Instantiate(SwitchPrefab, new Vector3(5 * i, -0.5f, 0), transform.rotation));
-            //switches[i].transform.localScale -= new Vector3(0.9F, 0.9F, 0.9F);
-            switches[i].ports.Add((Port)Instantiate(PortPrefab, switches[i].transform.position, switches[i].transform.rotation));
-            for (int j = 0; j < pcs.Count; j++)
-            {
-                switches[i].ports.Add((Port)Instantiate(PortPrefab, switches[i].transform.position, switches[i].transform.rotation));
-            }
             switches[i].SetID("Switch" + (i + 1));
         }
+
+
         loadCables();
         //SaveConfig();
     }
@@ -119,13 +104,11 @@ public class Engine : MonoBehaviour {
     public PC CreatePC(Transform transform)
     {
         PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
-        pc.port = (Port)Instantiate(PortPrefab, pc.transform.position, pc.transform.rotation);
         return pc;
     }
     public PC LoadPC(Transform transform, PCData load)
     {
         PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
-        pc.port = (Port)Instantiate(PortPrefab, pc.transform.position, transform.rotation);
         pc.Load(load);
 
         return pc;

@@ -20,7 +20,7 @@ public class Ping : MonoBehaviour
     {
         GameObject pingPacket = Instantiate(packetprefab);
         Packet packet = pingPacket.GetComponent<Packet>();
-        packet.CreatePacket("PING ECHO");
+        packet.CreatePacket("PING");
         packet.internet.setIP(IP, "dest");
         packet.internet.setIP(pc.IP, "src");
         packet.gameObject.AddComponent<ICMP>();
@@ -34,7 +34,7 @@ public class Ping : MonoBehaviour
     {
         GameObject pingPacket = Instantiate(packetprefab);
         Packet packet = pingPacket.GetComponent<Packet>();
-        packet.CreatePacket("PING REPLY");
+        packet.CreatePacket("PING");
         packet.internet.setIP(IP, "dest");
         packet.internet.setIP(pc.IP, "src");
         packet.gameObject.AddComponent<ICMP>();

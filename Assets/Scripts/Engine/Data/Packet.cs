@@ -4,7 +4,6 @@ using System;
 
 public class Packet : MonoBehaviour{
 
-	public int layers;
 	//TCP/IP layers to be loaded into packet
 	public Layer app, trans, internet, netAccess;
 	public string type;
@@ -14,16 +13,7 @@ public class Packet : MonoBehaviour{
     {
         switch (type)
         {
-            case "PING ECHO":
-                {
-                    app = new AppLayer("PING");
-                    trans = new TransLayer("");
-                    internet = new InternetLayer("IP");
-                    netAccess = new NALayer("Ethernet");
-                    this.type = type;
-                    break;
-                }
-            case "PING REPLY":
+            case "PING":
                 {
                     app = new AppLayer("PING");
                     trans = new TransLayer("");
@@ -36,6 +26,15 @@ public class Packet : MonoBehaviour{
                 {
                     app = new AppLayer("DHCP");
                     trans = new TransLayer("UDP");
+                    internet = new InternetLayer("IP");
+                    netAccess = new NALayer("Ethernet");
+                    this.type = type;
+                    break;
+                }
+            case "ARP":
+                {
+                    app = new AppLayer("");
+                    trans = new TransLayer("");
                     internet = new InternetLayer("IP");
                     netAccess = new NALayer("Ethernet");
                     this.type = type;

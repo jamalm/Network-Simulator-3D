@@ -17,8 +17,12 @@ public class Switch : MonoBehaviour {
 	//private List<PC> pcs;           //list of pc's connected
 	//private Router router;          //router connected
 	public List<Port> ports;        //list of ports available
+    public int numFEPorts = 8;            //number of ports to be assigned
+    public int numGPorts = 1;              
 	private List <string> macTable; //the mac table for forwarding packets
     private string id;
+    GameObject engine;
+    float timeElapsed = 0.0f;
 
     public void Load(SwitchData data)
     {
@@ -52,22 +56,35 @@ public class Switch : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+        int numPorts = numFEPorts + numGPorts;
+
+        engine = GameObject.FindGameObjectWithTag("Engine");
         //initialising the ports
-        ports[0].switchInit("fe0/0", this);
-        ports[1].switchInit("fe0/1", this);
-        ports[2].switchInit("fe0/2", this);
-        ports[3].switchInit("fe0/3", this);
-        ports[4].switchInit("g0/0", this);
-        //init the mactable
+        for (int i=0;i<numPorts;i++)
+        {
+            //instantiate port and set this to parent transform
+            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, transform.position, transform.rotation));
+            ports[i].transform.parent = transform;
+
+            //initialise the port types
+            if(i >= numFEPorts)
+            {
+                ports[i].Init("g0/" + (i-numFEPorts));
+            } else
+            {
+                ports[i].Init("fe0/" + i);
+            }
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
         UpdateMacTable();
-        if (macTable.Count == ports.Count)
+        if (timeElapsed > 3.0f)
         {
             GameController.gameState.netState = GameController.NetworkState.ACTIVE;
-        }
+        } timeElapsed += Time.deltaTime;
 	}
 
     public void SetID(string id)
@@ -211,14 +228,10 @@ public class Switch : MonoBehaviour {
     //forwards incoming packets
 	public void handlePacket(Packet packet, Port incomingPort){
 		Debug.Log (id + ": Receiving packet");
-        if(packet.GetComponent<DHCP>())
+        if (packet.type.Contains("DHCP")) 
         {
             DHCP dhcp = packet.GetComponent<DHCP>();
             Debug.LogAssertion(id + ": Receiving DHCP PACKET of type: " + dhcp.type);
-        }
-        if(packet.GetComponent<DHCP>().type.Equals("DHCPACK"))
-        {
-            Debug.Log("");
         }
 
         //if mac is addressed to a broadcast, do so

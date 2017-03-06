@@ -19,10 +19,15 @@ public class Router : MonoBehaviour {
 
 	private List<string> routingTable;
 	public List<Port> ports;
+    public int numFEPorts = 1;
+    public int numGPorts = 2;
 	private Packet packet;
     private string id;
 
+    private string ip;
 	private string MAC;
+
+    GameObject engine;
 
     public void Load(RouterData data)
     {
@@ -52,21 +57,30 @@ public class Router : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+        int numPorts = numFEPorts + numGPorts;
         MAC = "1";
         routingTable.Add("192.168.1.1");
         routingTable.Add("192.168.1.2");
         routingTable.Add("192.168.1.3");
         routingTable.Add("192.168.1.4");
         routingTable.Add("192.168.1.5");
+        ip = routingTable[4];
 
-        //ports [0] = GetComponent<Port> ();
-        ports[0].routerInit("g0/0", this);
-        //ports [1] = GetComponent<Port> ();
-        ports[1].routerInit("g0/1", this);
-        //ports [2] = GetComponent<Port> ();
-        ports[2].routerInit("fe0/0", this);
+        engine = GameObject.FindGameObjectWithTag("Engine");
+        //set up ports
+        for(int i=0;i<numPorts;i++)
+        {
+            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
+            ports[i].transform.parent = transform;
 
+            if(i >= numFEPorts)
+            {
+                ports[i].Init("g0/" + (i-numFEPorts));
+            } else
+            {
+                ports[i].Init("fe0/" + i);
+            }
+        }
     }
 
 	// Update is called once per frame
@@ -144,21 +158,31 @@ public class Router : MonoBehaviour {
 		Debug.Log ("ROUTER: RECEIVED PACKET");
 
         //if incoming packet is an ARP request addressed to this IP , return a reply
-        if(packet.type.Equals("ARP REQUEST") && packet.internet.getIP("dest").Equals(routingTable[0]))
+        if(packet.type.Equals("ARP") && packet.internet.getIP("dest").Equals(ip))
         {
-            //TODO Separate local area and wide area requests... 
-            Packet arpRep = new ARP("ARP REPLY");
+            Packet arpRep = Instantiate(packet);
+            arpRep.CreatePacket("ARP");
             arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
             arpRep.internet.setIP(routingTable[0], "src");
             arpRep.netAccess.setMAC(MAC, "src");
             arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
-            replyARP(arpRep, incomingPort);
+            ARP arp = arpRep.gameObject.GetComponent<ARP>();
+            arp.CreateARP("REPLY");
+            replyARP(arpRep ,incomingPort);
+            //TODO Separate local area and wide area requests... 
+
+            /*Packet arpRep = Instantiate(packet);
+            arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
+            arpRep.internet.setIP(routingTable[0], "src");
+            arpRep.netAccess.setMAC(MAC, "src");
+            arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
+            replyARP(arpRep, incomingPort);*/
         }
 
         for(int i = 0; i < routingTable.Count; i++)
         {
             
-            if(packet.type.Equals("ARP REQUEST"))
+            if(packet.type.Equals("ARP"))
             {
                 Debug.Log("ROUTER: Dropping ARP request");
                 break;

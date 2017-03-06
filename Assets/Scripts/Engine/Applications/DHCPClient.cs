@@ -16,7 +16,7 @@ public class DHCPClient : MonoBehaviour {
     STATE dhcpState;
     public GameObject packetPrefab;
     PC pc;
-    float timewait = 0.0f;
+    
 
 	// Use this for initialization
 	void Start () {
@@ -27,10 +27,12 @@ public class DHCPClient : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-            
-        if (pc.dhcpEnabled && pc.IP.Equals("0.0.0.0") && GameController.gameState.netState==GameController.NetworkState.ACTIVE)
+
+        if (pc.dhcpEnabled && pc.IP.Equals("0.0.0.0") && GameController.gameState.netState == GameController.NetworkState.ACTIVE)
         {
             StartCoroutine(Discovery());
+            if(pc.IP.Equals("0.0.0.0"))
+                GetComponent<Subnet>().SetDefaultConfiguration();
         }
         
     }
@@ -133,5 +135,6 @@ public class DHCPClient : MonoBehaviour {
     {
         Discover();
         yield return null;
+
     }
 }

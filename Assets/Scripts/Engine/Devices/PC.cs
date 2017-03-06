@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 /*************************************************
@@ -14,9 +14,11 @@ using System.Text.RegularExpressions;
  * ***********************************************/
 
 public class PC : MonoBehaviour {
-	public Port port;
+	public List<Port> ports = new List<Port>();
+    public int numPorts = 1;
     public Ping ping;
     public Subnet subnet;
+    GameObject engine;
 
 	public string MAC;
 	public string IP = "0.0.0.0";
@@ -31,7 +33,7 @@ public class PC : MonoBehaviour {
     public void Load(PCData data)
     {
         ping = data.ping;
-        port.Load(data.port);
+        ports[0].Load(data.port);
         MAC = data.MAC;
         IP = data.IP;
     }
@@ -39,7 +41,7 @@ public class PC : MonoBehaviour {
     {
         PCData data = new PCData();
         data.ping = ping;
-        data.port = port.Save();
+        data.port = ports[0].Save();
         data.MAC = MAC;
         data.IP = IP;
 
@@ -67,10 +69,22 @@ public class PC : MonoBehaviour {
                 MAC += Random.Range(0, 99).ToString();
             }
         }
+        engine = GameObject.FindGameObjectWithTag("Engine");
+        //setup ports
+        for (int i=0;i<numPorts;i++)
+        {
+            //instantiate port and set parent as this transform
+            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, transform.position, transform.rotation));
+            ports[i].transform.parent = transform;
+
+            //set up type
+            ports[i].Init("fe0/" + i);
+        }
         
-        port.pcInit("fe0/0", this);
+        //other applications
         ping = gameObject.GetComponent<Ping>();
         subnet = gameObject.GetComponent<Subnet>();
+        
     }
 
 	//
@@ -162,15 +176,15 @@ public class PC : MonoBehaviour {
     //ARP
     public void requestARP(Packet arpReq){
         Debug.Log(id + ": Creating an ARP request!");
-		if(port.isConnected()){
-            port.send(arpReq);
+		if(ports[0].isConnected()){
+            ports[0].send(arpReq);
 		} 
 	}
 	private void replyARP(Packet arpRep){
         Debug.Log("Replying to ARP!");
 
-        if (port.isConnected ()) {
-			port.send (arpRep);
+        if (ports[0].isConnected ()) {
+			ports[0].send (arpRep);
 		}
 	}
 
@@ -179,7 +193,7 @@ public class PC : MonoBehaviour {
 
 	public bool sendPacket(Packet packet){
         //check if the port is connected
-        if (port.isConnected()) { 
+        if (ports[0].isConnected()) { 
             Debug.Log(id + ": port is connected!");
 
             //check if the network mask is valid
@@ -191,22 +205,27 @@ public class PC : MonoBehaviour {
                 if (GetComponent<Subnet>().CheckNetwork(packet.internet.getIP("dest")))
                 {
                     Debug.Log(id + ": destination is on local network!");
-                    if (port.isListed(packet))
+                    if (ports[0].isListed(packet))
                     {
                         Debug.Log(id + ": MAC ADDRESS IS LISTED");
                         packet.netAccess.setMAC(MAC, "src");
-                        packet.netAccess.setMAC(port.getDestMAC(packet), "dest");   //set destination mac address
-                        port.send(packet);
+                        packet.netAccess.setMAC(ports[0].getDestMAC(packet), "dest");   //set destination mac address
+                        ports[0].send(packet);
                         return true;
                     }
                     else
                     {
                         Debug.LogAssertion(id + ": ARP TABLE OUT OF DATE, REQUESTING>>>");
                         //send ARP Request!
-                        Packet arpReq = new ARP("ARP REQUEST");
+                        Packet arpReq = Instantiate(packet);
+                        arpReq.CreatePacket("ARP");
                         arpReq.internet.setIP(getIP(), "src");                          //set the src ip
                         arpReq.internet.setIP(packet.internet.getIP("dest"), "dest");   //set the dest ip
                         arpReq.netAccess.setMAC(MAC, "src");
+                        arpReq.netAccess.setMAC("FF:FF:FF:FF:FF:FF", "dest");
+                        arpReq.gameObject.AddComponent<ARP>();
+                        ARP arp = arpReq.GetComponent<ARP>();
+                        arp.CreateARP("REQUEST");
                         requestARP(arpReq);
 
                         return false;
@@ -215,7 +234,7 @@ public class PC : MonoBehaviour {
                 else if(packet.GetComponent<DHCP>())
                 {
                     //if the packet has a dhcp component, forward
-                    port.send(packet);
+                    ports[0].send(packet);
                     return true;
                 }
                 else
@@ -227,7 +246,7 @@ public class PC : MonoBehaviour {
             else if (packet.GetComponent<DHCP>())
             {
                 //if the packet contains a dhcp component, forward it on
-                port.send(packet);
+                ports[0].send(packet);
                 return true;
             }
             else
@@ -245,68 +264,79 @@ public class PC : MonoBehaviour {
 		Debug.LogAssertion (id + ": Packet Received! -> " + packet.type);
 
         //if it is a ping 
-		if (packet.type.Equals ("PING ECHO"))
+		if (packet.type.Equals ("PING"))
         {
-            //pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
-            if (!sendPacket(ping.Reply(packet.internet.getIP("src"))))
+            if(packet.GetComponent<ICMP>().GetType().Equals("REQUEST"))
             {
-                //if packet doesn't send...
-                //TODO do something when the packet doesn't send
-                Debug.LogAssertion(id + ": PACKET FAILED TO SEND");
+                //pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
+                if (!sendPacket(ping.Reply(packet.internet.getIP("src"))))
+                {
+                    //if packet doesn't send...
+                    //TODO do something when the packet doesn't send
+                    Debug.LogAssertion(id + ": PACKET FAILED TO SEND");
+                }
             }
         }
         //if it is an arp request
-		if (packet.type.Equals ("ARP REQUEST"))
+		if (packet.type.Equals ("ARP"))
         {
-            if (packet.internet.getIP("dest").Equals(IP))
+            if(packet.GetComponent<ARP>().type.Equals("REQUEST"))
             {
-                Packet arpRep = new ARP("ARP REPLY");
-                arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
-                arpRep.internet.setIP(IP, "src");
-                arpRep.netAccess.setMAC(MAC, "src");
-                arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
-                replyARP(arpRep);
-                
-            } 
+                if (packet.internet.getIP("dest").Equals(IP))
+                {
+                    Packet arpRep = Instantiate(packet);
+                    arpRep.CreatePacket("ARP");
+                    arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
+                    arpRep.internet.setIP(IP, "src");
+                    arpRep.netAccess.setMAC(MAC, "src");
+                    arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
+                    ARP arp = arpRep.gameObject.GetComponent<ARP>();
+                    arp.CreateARP("REPLY");
+                    replyARP(arpRep);
+                }
+            }
+            else if(packet.GetComponent<ARP>().type.Equals("REPLY"))
+            {
+                Debug.Log(id + ": Processing ARP reply..");
+                ports[0].updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
+
+            }
             else
             {
                 Debug.Log(id + ": dropping ARP request , not my ip!");
                 
             }
 		}
-        //if it is an ARP Reply
-        if(packet.type.Equals("ARP REPLY"))
+
+        if(packet.type.Contains("DHCP"))
         {
-            Debug.Log(id + ": Processing ARP reply..");
-            port.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
-            
+            //if this device is a DHCP server/client..
+            if (GetComponent<DHCPServer>())
+            {
+
+                GetComponent<DHCPServer>().handle(packet);
+            }
+            else if (GetComponent<DHCPClient>())
+            {
+
+                GetComponent<DHCPClient>().handle(packet);
+            }
         }
 
-        //if this device is a DHCP server/client..
-        if(GetComponent<DHCPServer>())
-        {
-            
-            GetComponent<DHCPServer>().handle(packet);
-        }
-        else if(GetComponent<DHCPClient>())
-        {
-            
-            GetComponent<DHCPClient>().handle(packet);
-        }
 			
 	}
 
 	public Port getNewPort(){
 		Debug.Log (id + ": finding new port to bind");
-		if (!port.isConnected ()) {
-			return port;
+		if (!ports[0].isConnected ()) {
+			return ports[0];
 		} else {
 			return null;
 		}
 	}
     public Port getPort()
     {
-        return port;
+        return ports[0];
     }
 
 	/////////////////////////////////////////////

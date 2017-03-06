@@ -21,7 +21,6 @@ public class InspectorEngine : MonoBehaviour {
             case "PC":
                 {
                     PC pc = (PC)Instantiate(PCPrefab, Vector3.zero, transform.rotation);
-                    pc.port = (Port)Instantiate(PortPrefab, pc.transform.position, pc.transform.rotation);
                     pc.Load(ConfigurationManager.config.inspectorPC);
                     //device = pc.GetComponent<GameObject>();
                     break;

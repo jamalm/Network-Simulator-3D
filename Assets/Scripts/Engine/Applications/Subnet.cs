@@ -212,4 +212,15 @@ public class Subnet : MonoBehaviour {
         CalculateCIDR();
     }
 
+    public void SetDefaultConfiguration()
+    {
+        
+        GetComponent<PC>().IP = "169.254.0." + UnityEngine.Random.Range(2,254).ToString();
+        mask = "255.255.0.0";
+        network = ResolveNetwork(GetComponent<PC>().IP);
+        broadcast = ResolveBroadcast(GetComponent<PC>().IP);
+        CalculateCIDR();
+        
+    }
+
 }

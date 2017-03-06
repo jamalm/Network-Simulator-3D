@@ -30,10 +30,12 @@ public class Cable : MonoBehaviour
 		this.port2 = port2;
 	}
 
-	public void unplug(){
-		port1 = null;
-		port2 = null;
-	}
+    public void unplug()
+    {
+        port1 = null;
+        port2 = null;
+        Destroy(gameObject);
+    }
 
 
 	//checks to see who's port is who's

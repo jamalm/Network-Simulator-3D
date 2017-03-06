@@ -1,16 +1,12 @@
-﻿using System;
+﻿using UnityEngine;
+using System;
 
-public class ARP : Packet
+public class ARP : MonoBehaviour
 {
-	public ARP (string _type)
-	{
-        
-		type = _type;
-		netAccess = new NALayer ("Ethernet");
-		internet = new InternetLayer ("IP");
-
-		if (type.Equals ("ARP REQUEST")) {
-			netAccess.setMAC ("FF:FF:FF:FF:FF:FF", "dest");
-		} 
-	}
+    public string type;
+    
+    public void CreateARP(string type)
+    {
+        this.type = type;
+    }
 }
