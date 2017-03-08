@@ -22,7 +22,7 @@ public class Port : MonoBehaviour {
 	public string device;		//device port belongs to 
     public string ip;
     public string mac;
-    public int vlan = 1;
+    public Link link;
 
 	private string endPortMAC;			//MAC address of port on other end of cable (for switches)
 
@@ -131,7 +131,7 @@ public class Port : MonoBehaviour {
     //initialise the ARP Table at the beginning of the application start up 
     void Awake(){
 		arpTable = new Dictionary<string, string> ();
-
+        link = GetComponent<Link>();
     }
 	void Start(){
 
@@ -261,6 +261,13 @@ public class Port : MonoBehaviour {
 		Debug.Log ("PORT: Sending packet through cable");
 
         Animate(packet);
+        //tag packet with vlan
+        if(link.type.Equals("access"))
+        {
+            packet.gameObject.AddComponent<Link>();
+            packet.gameObject.GetComponent<Link>().type = link.type;
+            packet.gameObject.GetComponent<Link>().vlan = link.vlan;
+        }
         if(connected)
         {
             return cable.send(packet, this);
@@ -315,21 +322,27 @@ public class Port : MonoBehaviour {
         
 		//if the port belongs to a switch
 		if (device.Equals ("switch")) {
-			switch (endPort.device) {
-			case "pc" :
-				{
-					//bind mac address of pc and store in switch port
-					setMAC(endPort.getPC().getMAC());
-                    vlan = endPort.vlan;
-					break;
-				}
-			case "router": 
-				{
-					//bind mac address of router and store in switch port
-					setMAC(endPort.getRouter().getMAC());
-					break;
-				}
-			}
+            switch (endPort.device)
+            {
+                case "pc":
+                    {
+                        //bind mac address of pc and store in switch port
+                        setMAC(endPort.getPC().getMAC());
+                        link.type = "access";
+                        link.vlan = endPort.link.vlan;
+                        break;
+                    }
+                case "router":
+                    {
+                        //bind mac address of router and store in switch port
+                        setMAC(endPort.getRouter().getMAC());
+                        link.type = "trunk";
+                        endPort.link.type = link.type;
+                        link.vlan = 0;
+                        endPort.link.vlan = 0;
+                        break;
+                    }
+            }
 		}
 	}
 		
@@ -346,9 +359,9 @@ public class Port : MonoBehaviour {
         //TODO same here
 
 		setMAC(null);
-        vlan = 0;
+        link.vlan = 0;
 		endPort.setMAC (null);
-        endPort.vlan = 0;
+        endPort.link.vlan = 0;
         if(device.Equals("switch"))
         {
             endPortMAC = null;

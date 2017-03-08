@@ -219,7 +219,7 @@ public class Switch : MonoBehaviour {
 	private bool broadcast(Packet packet, Port incomingPort) {
 		for (int i = 0; i < ports.Count; i++) {
             //if port is on the same vlan as the incoming one; VLANS YEAH
-            if(ports[i].vlan == incomingPort.vlan)
+            if(ports[i].link.vlan == incomingPort.link.vlan || ports[i].link.type.Equals("trunk"))
             {
                 if (ports[i].isConnected() && ports[i] != incomingPort)
                 {
@@ -261,8 +261,8 @@ public class Switch : MonoBehaviour {
         //if it is....
         if(IsInMacTable)
         {
-            //if outgoing port is the same as incoming, ignore packet || if the vlans are not the same, ignore for now 
-            if (getPort(packet.netAccess.getMAC("dest")).Equals(incomingPort) || getPort(packet.netAccess.getMAC("dest")).vlan != incomingPort.vlan)
+            //if outgoing port is the same as incoming, ignore packet || if the vlans are not the same, ignore for now//if trunk link, forward 
+            if (getPort(packet.netAccess.getMAC("dest")).Equals(incomingPort) || (getPort(packet.netAccess.getMAC("dest")).link.vlan != incomingPort.link.vlan))
             {
                 return false;
             } //else if the mac address is broadcast, do it

@@ -11,6 +11,7 @@ public class Subnet : MonoBehaviour {
     public string defaultGateway = "0.0.0.0";
     public bool validMask;
     public int CIDR;
+    public int vlan;
     
 	// Use this for initialization
 	void Start ()

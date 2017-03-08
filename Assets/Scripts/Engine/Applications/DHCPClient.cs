@@ -34,7 +34,6 @@ public class DHCPClient : MonoBehaviour {
             if(pc.IP.Equals("0.0.0.0"))
                 GetComponent<Subnet>().SetDefaultConfiguration();
         }
-        
     }
 
     private void Discover()

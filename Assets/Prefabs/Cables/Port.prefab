@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 23023761114651892}
   - component: {fileID: 114764814828859844}
   - component: {fileID: 114392085634759656}
+  - component: {fileID: 114732778282060270}
   m_Layer: 0
   m_Name: Port
   m_TagString: Untagged
@@ -107,6 +108,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   on: {fileID: 2100000, guid: e560e9b405ef137499d09883795dddd4, type: 2}
   off: {fileID: 2100000, guid: 6917d8f2abacd7f4da76f57c3b12bbc5, type: 2}
+--- !u!114 &114732778282060270
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1736428861542130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4129f3bbb3579924ebbe6213f5d7aedb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 
+  vlan: 1
+  forbiddenVlans: 
 --- !u!114 &114764814828859844
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -123,6 +138,7 @@ MonoBehaviour:
   device: 
   ip: 
   mac: 
+  link: {fileID: 0}
   pc: {fileID: 0}
   swit: {fileID: 0}
   router: {fileID: 0}

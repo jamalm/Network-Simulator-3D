@@ -58,7 +58,18 @@ public class Router : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         int numPorts = numFEPorts + numGPorts;
-        MAC = "1";
+        for (int i = 0; i < 6; i++)
+        {
+            if (i != 5)
+            {
+                MAC += Random.Range(0, 99).ToString() + ":";
+
+            }
+            else
+            {
+                MAC += Random.Range(0, 99).ToString();
+            }
+        }
         routingTable.Add("192.168.1.1");
         routingTable.Add("192.168.1.2");
         routingTable.Add("192.168.1.3");
