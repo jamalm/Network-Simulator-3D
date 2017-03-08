@@ -22,6 +22,7 @@ public class Port : MonoBehaviour {
 	public string device;		//device port belongs to 
     public string ip;
     public string mac;
+    public int vlan = 1;
 
 	private string endPortMAC;			//MAC address of port on other end of cable (for switches)
 
@@ -138,6 +139,16 @@ public class Port : MonoBehaviour {
     }
 
 	void Update(){
+        if(cable != null)
+        {
+            if(cable.faulty)
+            {
+                connected = false;
+            } else
+            {
+                connected = true;
+            }
+        }
         if(connected)
         {
             GetComponent<PortStatus>().TurnOn();
@@ -246,35 +257,52 @@ public class Port : MonoBehaviour {
 
 
 	//Send the specified packet.
-	public virtual void send(Packet packet){
+	public virtual bool send(Packet packet){
 		Debug.Log ("PORT: Sending packet through cable");
 
         Animate(packet);
-        cable.send(packet, this);
+        if(connected)
+        {
+            return cable.send(packet, this);
+        } else
+        {
+            return false;
+        }
+        
         
 	}
 
 	//handle incoming packets
-	public virtual void receive(Packet packet){
+	public virtual bool receive(Packet packet){
 		Debug.Log ("PORT: Receiving packet from cable");
-        
-		switch (device) {
-		case "pc":
-			{
-				pc.handlePacket (packet);
-				break;
-			}
-		case "switch":
-			{
-				swit.handlePacket (packet, this);
-				break;
-			}
-		case "router":
-			{
-				router.handlePacket (packet, this);
-				break;
-			}
-		}
+        if(connected)
+        {
+            switch (device)
+            {
+                case "pc":
+                    {
+                        pc.handlePacket(packet);
+                        return true;
+                    }
+                case "switch":
+                    {
+                        return swit.handlePacket(packet, this);
+                    }
+                case "router":
+                    {
+                        router.handlePacket(packet, this);
+                        return true;
+                    }
+                default:
+                    {
+                        return false;
+                    }
+            }
+        } else
+        {
+            return false;
+        }
+
 	}
 
 	//plugs in the cable to the port
@@ -292,6 +320,7 @@ public class Port : MonoBehaviour {
 				{
 					//bind mac address of pc and store in switch port
 					setMAC(endPort.getPC().getMAC());
+                    vlan = endPort.vlan;
 					break;
 				}
 			case "router": 
@@ -317,7 +346,16 @@ public class Port : MonoBehaviour {
         //TODO same here
 
 		setMAC(null);
+        vlan = 0;
 		endPort.setMAC (null);
+        endPort.vlan = 0;
+        if(device.Equals("switch"))
+        {
+            endPortMAC = null;
+        } else if(endPort.device.Equals("switch"))
+        {
+            endPort.endPortMAC = null;
+        }
 
 	}
 

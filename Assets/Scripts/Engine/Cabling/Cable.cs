@@ -6,6 +6,7 @@ public class Cable : MonoBehaviour
 	private string type;
 	public Port port1;
 	public Port port2;
+    public bool faulty = false;
 
 	// Use this for initialization
 	void Start ()
@@ -32,23 +33,36 @@ public class Cable : MonoBehaviour
 
     public void unplug()
     {
+        
         port1 = null;
         port2 = null;
         Destroy(gameObject);
     }
 
+    
+
 
 	//checks to see who's port is who's
 	public bool send(Packet packet, Port sender){
 		Debug.Log("CABLE: received packet ,forwarding..");
-		//if port1's device is the same as the sender..
-		if (sender.getDevice().Equals (port1.getDevice())) {
-			port2.receive (packet);//send to port 2
-            return true;
-		} else {
-			port1.receive (packet);//send to port 1
-            return true;
-		}
+        if(!faulty)
+        {
+            //if port1's device is the same as the sender..
+            if (sender.getDevice().Equals(port1.getDevice()))
+            {
+                return port2.receive(packet);//send to port 2
+
+            }
+            else
+            {
+                return port1.receive(packet);//send to port 1
+
+            }
+        } else 
+        {
+            return false;
+        }
+
 	}
 }
 

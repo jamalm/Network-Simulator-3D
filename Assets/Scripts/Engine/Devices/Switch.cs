@@ -216,24 +216,75 @@ public class Switch : MonoBehaviour {
 
 
     //send packet to all devices on LAN
-	private void broadcast(Packet packet, Port incomingPort) {
+	private bool broadcast(Packet packet, Port incomingPort) {
 		for (int i = 0; i < ports.Count; i++) {
-			if (ports [i].isConnected () && ports[i] != incomingPort) {
-				ports [i].send (packet);
-			}
+            //if port is on the same vlan as the incoming one; VLANS YEAH
+            if(ports[i].vlan == incomingPort.vlan)
+            {
+                if (ports[i].isConnected() && ports[i] != incomingPort)
+                {
+                    ports[i].send(packet);
+                }
+            }
 		}
+        return true;
 	}
 
 
     //forwards incoming packets
-	public void handlePacket(Packet packet, Port incomingPort){
+    //Transparent Bridge Algorithm
+    /*
+     * 1. if dest mac is in mactable, send to port
+     * 2. if outport is the same as in port, ignore packet
+     * 3. if dest mac is not in the mactable, flood vlan that port came from
+     * 4. if dest mac is broadcast, flood vlan that port came from
+     * 
+     */
+	public bool handlePacket(Packet packet, Port incomingPort){
 		Debug.Log (id + ": Receiving packet");
+        /*
+        //dhcp check
         if (packet.type.Contains("DHCP")) 
         {
             DHCP dhcp = packet.GetComponent<DHCP>();
             Debug.LogAssertion(id + ": Receiving DHCP PACKET of type: " + dhcp.type);
+        }*/
+        bool IsInMacTable = false; //check if mac is recognised
+        for (int i = 0; i < macTable.Count; i++)
+        {
+            //check if dest mac is in mactable
+            if (packet.netAccess.getMAC("dest").Equals(macTable[i]))
+            {
+                IsInMacTable = true;
+            }
         }
-
+        //if it is....
+        if(IsInMacTable)
+        {
+            //if outgoing port is the same as incoming, ignore packet || if the vlans are not the same, ignore for now 
+            if (getPort(packet.netAccess.getMAC("dest")).Equals(incomingPort) || getPort(packet.netAccess.getMAC("dest")).vlan != incomingPort.vlan)
+            {
+                return false;
+            } //else if the mac address is broadcast, do it
+            else if (packet.netAccess.getMAC("dest").Equals("FF:FF:FF:FF:FF:FF"))
+            {
+                
+                return broadcast(packet, incomingPort); 
+            }
+            else
+            {
+                //else forward packet to port with same vlan
+                return getPort(packet.netAccess.getMAC("dest")).send(packet);
+                
+            }
+        }
+        //if it isnt
+        else
+        {
+            //just broadcast on vlan anyway , flood 
+            return broadcast(packet, incomingPort);
+        }
+        /*
         //if mac is addressed to a broadcast, do so
 		if (packet.netAccess.getMAC ("dest").Equals ("FF:FF:FF:FF:FF:FF")) {
             Debug.Log(id + ": BroadCast MAC ADDRESS!");
@@ -250,9 +301,11 @@ public class Switch : MonoBehaviour {
 					getPort (macTable[i]).send (packet);
 				}
 			}
+
             
-        }
-	}
+        }*/
+
+    }
     
     public void plug(Cable cable ,Port endPort, Port startPort)
     {

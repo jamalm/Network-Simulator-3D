@@ -210,8 +210,8 @@ public class PC : MonoBehaviour {
                         Debug.Log(id + ": MAC ADDRESS IS LISTED");
                         packet.netAccess.setMAC(MAC, "src");
                         packet.netAccess.setMAC(ports[0].getDestMAC(packet), "dest");   //set destination mac address
-                        ports[0].send(packet);
-                        return true;
+                        return ports[0].send(packet);
+                        
                     }
                     else
                     {
@@ -234,8 +234,8 @@ public class PC : MonoBehaviour {
                 else if(packet.GetComponent<DHCP>())
                 {
                     //if the packet has a dhcp component, forward
-                    ports[0].send(packet);
-                    return true;
+                    return ports[0].send(packet);
+                    
                 }
                 else
                 {
@@ -246,8 +246,8 @@ public class PC : MonoBehaviour {
             else if (packet.GetComponent<DHCP>())
             {
                 //if the packet contains a dhcp component, forward it on
-                ports[0].send(packet);
-                return true;
+                return ports[0].send(packet);
+                
             }
             else
             {
