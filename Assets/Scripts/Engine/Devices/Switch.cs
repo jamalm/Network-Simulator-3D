@@ -242,13 +242,17 @@ public class Switch : MonoBehaviour {
      */
 	public bool handlePacket(Packet packet, Port incomingPort){
 		Debug.Log (id + ": Receiving packet");
-        /*
+        
         //dhcp check
         if (packet.type.Contains("DHCP")) 
         {
-            DHCP dhcp = packet.GetComponent<DHCP>();
-            Debug.LogAssertion(id + ": Receiving DHCP PACKET of type: " + dhcp.type);
-        }*/
+            if(packet.GetComponent<DHCP>().type.Equals("DHCPREQUEST"))
+            {
+                DHCP dhcp = packet.GetComponent<DHCP>();
+                Debug.LogAssertion(id + ": Receiving DHCP PACKET of type: " + dhcp.type);
+            }
+
+        }
         bool IsInMacTable = false; //check if mac is recognised
         for (int i = 0; i < macTable.Count; i++)
         {
@@ -261,9 +265,56 @@ public class Switch : MonoBehaviour {
         //if it is....
         if(IsInMacTable)
         {
-            //if outgoing port is the same as incoming, ignore packet || if the vlans are not the same, ignore for now//if trunk link, forward 
+            //if outgoing port is the same as incoming OR if the vlans are not the same
             if (getPort(packet.netAccess.getMAC("dest")).Equals(incomingPort) || (getPort(packet.netAccess.getMAC("dest")).link.vlan != incomingPort.link.vlan))
             {
+                //if tagged
+                if(packet.gameObject.GetComponent<Link>())
+                {
+                    //it came from a trunk and is either going through another trunk, an access link, or it's faulty
+                    if(incomingPort.link.type.Equals("trunk"))
+                    {
+                        if(getPort(packet.netAccess.getMAC("dest")).link.type.Equals("trunk"))
+                        {
+                            return getPort(packet.netAccess.getMAC("dest")).send(packet);
+                        } else if(getPort(packet.netAccess.getMAC("dest")).link.type.Equals("access"))
+                        {
+                            //if its going out an access link, make sure to remove the vlan tag
+                            Destroy(packet.gameObject.GetComponent<Link>());
+                            return getPort(packet.netAccess.getMAC("dest")).send(packet);
+                        }
+                    }
+                    //send it through trunked ports
+                    if(getPort(packet.netAccess.getMAC("dest")).link.type.Equals("trunk"))
+                    {
+                        
+                        return getPort(packet.netAccess.getMAC("dest")).send(packet);
+                    }
+                    //if the vlan tag matches the port
+                    if(packet.gameObject.GetComponent<Link>().vlan.Equals(getPort(packet.netAccess.getMAC("dest")).link.vlan))
+                    {
+                        return getPort(packet.netAccess.getMAC("dest")).send(packet);
+                    } else
+                    {
+                        return false;
+                    }
+                } else
+                {
+                    //if its not tagged, it's come from an access link and either going to a trunk or a faulty packet
+                    if(incomingPort.link.type.Equals("access") && getPort(packet.netAccess.getMAC("dest")).link.type.Equals("trunk"))
+                    {
+                        //tag the packet with vlan info
+                        Link vlanTag = packet.gameObject.AddComponent<Link>();
+                        vlanTag.vlan = incomingPort.link.vlan;
+                        //send packet through trunk
+                        return getPort(packet.netAccess.getMAC("dest"));
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                //unknown case
                 return false;
             } //else if the mac address is broadcast, do it
             else if (packet.netAccess.getMAC("dest").Equals("FF:FF:FF:FF:FF:FF"))

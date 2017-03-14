@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class SaveGame : MonoBehaviour
 {
     public Text errorMsg;
-    private bool noFiles = false;
+    //private bool noFiles = false;
 
     private void Awake()
     {

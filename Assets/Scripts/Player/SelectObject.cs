@@ -5,7 +5,7 @@ public class SelectObject : MonoBehaviour {
 
     private float distance;
     private float crosshairScale;
-    private bool hitting;
+    //private bool hitting;
     private GameObject obj;
 
 
@@ -19,7 +19,7 @@ public class SelectObject : MonoBehaviour {
     {
         crosshairScale = 1;
         distance = 5;
-        hitting = false;
+        //hitting = false;
         obj = null;
         editScreen = GetComponentInChildren<EditScreen>();
     }
@@ -35,10 +35,10 @@ public class SelectObject : MonoBehaviour {
             obj = objTrans.gameObject;
             //Debug.Log("ray is casting to: " + obj);
             Debug.DrawRay(transform.position, transform.forward*10, Color.red);
-            hitting = true;
+            //hitting = true;
         } else
         {
-            hitting = false;
+            //hitting = false;
             obj = null;
         }
         if(Input.GetMouseButtonDown(0))

@@ -29,7 +29,7 @@ public class GameController : MonoBehaviour {
 
     private bool paused;
 
-    private bool load;          //for loading instructions per game state
+    //private bool load;          //for loading instructions per game state
     
 
     //singleton pattern
@@ -49,7 +49,7 @@ public class GameController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         paused = false;
-        load = false;
+        //load = false;
         
     }
 	

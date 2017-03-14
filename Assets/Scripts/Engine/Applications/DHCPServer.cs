@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class DHCPServer : MonoBehaviour {
 
-    List<DHCPClient> clients = new List<DHCPClient>();
     public string netmask;
     public string gateway;
     public Dictionary<string, bool> IPList = new Dictionary<string, bool>();
-
+    private Subnet subnet;
+    public Port port;
 
     // Use this for initialization
     void Start () {
-        netmask = GetComponent<Subnet>().mask;
+        /*netmask = GetComponent<Subnet>().mask;
         gateway = GetComponent<Subnet>().defaultGateway;
-        GenerateLeases();
+        GenerateLeases();*/
 	}
+
+    public void Setup(Subnet subnet_)
+    {
+        subnet = subnet_;
+        port = subnet.GetComponent<Port>();
+        netmask = subnet.mask;
+        gateway = subnet.defaultGateway;
+        GenerateLeases();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -30,13 +39,13 @@ public class DHCPServer : MonoBehaviour {
             case "DHCPDISCOVER":
                 {
 
-                    Debug.Log(GetComponent<PC>().GetID() + ": RECEIVED DHCP DISCOVER");
+                    Debug.Log(GetComponent<Router>().GetID() + ": RECEIVED DHCP DISCOVER");
                     Offer(packet);
                     break;
                 }
             case "DHCPREQUEST":
                 {
-                    Debug.Log(GetComponent<PC>().GetID() + ": RECEIVED DHCP REQUEST");
+                    Debug.Log(GetComponent<Router>().GetID() + ": RECEIVED DHCP REQUEST");
                     Ack(packet);
                     break;
                 }
@@ -46,7 +55,7 @@ public class DHCPServer : MonoBehaviour {
                 }
             default:
                 {
-                    Debug.Log(GetComponent<PC>().GetID() + ": SERVER DROPPING DHCP PACKET " + packet.GetComponent<DHCP>().type);
+                    Debug.Log(GetComponent<Router>().GetID() + ": SERVER DROPPING DHCP PACKET " + packet.GetComponent<DHCP>().type);
                     break;
                 }
         }
@@ -66,11 +75,12 @@ public class DHCPServer : MonoBehaviour {
             Debug.LogAssertion("SERVERDHCP: NO LEASES LEFT");
         } else
         {
-            packet.netAccess.setMAC(GetComponent<PC>().MAC, "src");
+            packet.netAccess.setMAC(GetComponent<Router>().getMAC(), "src");
             packet.netAccess.setMAC(dhcp.cliMac, "dest");
             packet.internet.setIP(gateway, "src");
             packet.internet.setIP("255.255.255.255", "dest");
-            GetComponent<PC>().sendPacket(packet);
+
+            port.send(packet);
         }
         
     }
@@ -81,9 +91,11 @@ public class DHCPServer : MonoBehaviour {
         packet.GetComponent<DHCP>().type = "DHCPACK";
         packet.internet.setIP(packet.internet.getIP("src"), "dest");
         packet.internet.setIP(gateway, "src");
-        packet.netAccess.setMAC(GetComponent<PC>().MAC, "src");
+        
+        packet.netAccess.setMAC(GetComponent<Router>().getMAC(), "src");
         packet.netAccess.setMAC(packet.GetComponent<DHCP>().cliMac, "dest");
-        GetComponent<PC>().sendPacket(packet);
+        //GetComponent<PC>().sendPacket(packet);
+        port.send(packet);
     }
 
     private string GetLease()
@@ -110,13 +122,13 @@ public class DHCPServer : MonoBehaviour {
 
     private void GenerateLeases()
     {
-        int CIDR = GetComponent<Subnet>().CIDR;
+        int CIDR = subnet.CIDR;
         //calculate number of clients
         int hostBits = 32 - CIDR;
         //2^n-2 where n is hostbits
         int numclients = (int)Mathf.Pow(2, hostBits) - 2;
 
-        string network = GetComponent<Subnet>().network;
+        string network = subnet.network;
         string[] netBitString = network.Split('.');
         
         if (CIDR >= 24)

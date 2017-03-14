@@ -4,7 +4,7 @@ public class ICMP : MonoBehaviour {
 
     //internet layer handling
 
-    private string type;
+    public string type;
     
     /*
     public Packet CreatePacket(string IP, PC pc)

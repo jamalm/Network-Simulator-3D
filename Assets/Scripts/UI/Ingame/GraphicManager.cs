@@ -34,6 +34,7 @@ public class GraphicManager : MonoBehaviour
         Transform startPos = GetStart(from);
         Vector3 endPos = GetEnd(to);
         GameObject ping = packet.gameObject;
+        ping.transform.position = new Vector3(startPos.position.x, 1.0f, startPos.position.z);
         //GameObject ping = Instantiate(pingPrefab, new Vector3(startPos.position.x, 1.0f, startPos.position.z), Quaternion.identity);
 
         StartCoroutine(Move(endPos, ping));
@@ -53,6 +54,7 @@ public class GraphicManager : MonoBehaviour
         Transform startPos = GetStart(from);
         Vector3 endPos = GetEnd(to);
         GameObject arp = packet.gameObject;
+        arp.transform.position = new Vector3(startPos.position.x, 1.0f, startPos.position.z);
         //GameObject arp = Instantiate(arpPrefab, new Vector3(startPos.position.x, 1.0f, startPos.position.z), Quaternion.identity);
 
         StartCoroutine(Move(endPos, arp));

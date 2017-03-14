@@ -6,37 +6,36 @@ public class Subnet : MonoBehaviour {
 
     //this states the device's subnet
     public string mask;
-    public string network = "0.0.0.0";
-    public string broadcast = "255.255.255.255";
-    public string defaultGateway = "0.0.0.0";
+    public string network;
+    public string broadcast;
+    public string defaultGateway;
     public bool validMask;
     public int CIDR;
-    public int vlan;
+
     
 	// Use this for initialization
 	void Start ()
     {
-        broadcast = "255.255.255";
+        /*broadcast = "255.255.255.255";
         network = "0.0.0.0";
         defaultGateway = "0.0.0.0";
-        mask = "255.255.255.255";
+        mask = "255.255.255.255";*/
+        /*
         if (GetComponent<DHCPServer>())
         {
             mask = "255.255.255.0";
             GetComponent<PC>().IP = "192.168.1.1";
-            
-        }
+        }*/
         
-        
-        validMask = ValidateMask(mask);
-        if (!GetComponent<PC>().Equals(null))
+        if (GetComponent<PC>())
         {
+            validMask = ValidateMask(mask);
             network = ResolveNetwork(GetComponent<PC>().IP);
             broadcast = ResolveBroadcast(GetComponent<PC>().IP);
             Debug.Log(GetComponent<PC>().GetID() + ": Network is: " + network);
+            CalculateCIDR();
         }
-        CalculateCIDR();
-        
+       
     }
 	
 	// Update is called once per frame
@@ -203,7 +202,7 @@ public class Subnet : MonoBehaviour {
         //set mask
         mask = dhcp.mask;
         validMask = ValidateMask(mask);
-        if (!GetComponent<PC>().Equals(null))
+        if (GetComponent<PC>())
         {
             network = ResolveNetwork(GetComponent<PC>().IP);
             broadcast = ResolveBroadcast(GetComponent<PC>().IP);
@@ -222,6 +221,17 @@ public class Subnet : MonoBehaviour {
         broadcast = ResolveBroadcast(GetComponent<PC>().IP);
         CalculateCIDR();
         
+    }
+
+    public void CreateConfiguration(string net, string mask, string gateway)
+    {
+        network = net;
+        this.mask = mask;
+        validMask = ValidateMask(this.mask);
+        defaultGateway = gateway;
+        broadcast = ResolveBroadcast(gateway);
+        
+        CalculateCIDR();
     }
 
 }

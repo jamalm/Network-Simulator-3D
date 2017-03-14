@@ -5,13 +5,13 @@ public class Movement : MonoBehaviour {
 
     public float moveSpeed = 10f;
     public Camera player;
-    private Rigidbody rb;
+    //private Rigidbody rb;
     public Vector3 force = Vector3.zero;
 
     // Use this for initialization
     private void Start () {
         player = GetComponent<Camera>();
-        rb = GetComponent<Rigidbody>();
+        //rb = GetComponent<Rigidbody>();
 
 	}
 	

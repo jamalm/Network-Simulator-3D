@@ -25,7 +25,7 @@ public class PC : MonoBehaviour {
     private string id;
 
     //for dhcp settings
-    public bool dhcpEnabled = false;
+    public bool dhcpEnabled;
     
 
     
@@ -50,11 +50,12 @@ public class PC : MonoBehaviour {
 
     void Awake(){
         //port = GetComponent<Port> ();
-        
+        dhcpEnabled = false;
     }
 
 	//init
 	void Start (){
+        
         IP = "0.0.0.0";
         //setup mac address
         for (int i=0;i<6;i++)
@@ -351,25 +352,21 @@ public class PC : MonoBehaviour {
             case 1:
             {
                 setIP("192.168.1.2");
-                setMAC("1234");
                 break;
             }
             case 2:
             {
                 setIP("192.168.1.3");
-                setMAC("5678");
                 break;
             }
             case 3:
             {
                 setIP("192.168.1.4");
-                setMAC("9012");
                 break;
             }
             case 4:
             {
                 setIP("192.168.1.129");
-                setMAC("3456");
                 break;
             }
         }

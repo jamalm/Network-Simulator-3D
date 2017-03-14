@@ -19,15 +19,19 @@ public class Router : MonoBehaviour {
 
 	private List<string> routingTable;
 	public List<Port> ports;
+
+
+    public Dictionary<string, Port> RoutingTable = new Dictionary<string, Port>();
     public int numFEPorts = 1;
     public int numGPorts = 2;
-	private Packet packet;
     private string id;
-
     private string ip;
 	private string MAC;
 
     GameObject engine;
+    public DHCPServer[] servers;
+
+
 
     public void Load(RouterData data)
     {
@@ -70,12 +74,14 @@ public class Router : MonoBehaviour {
                 MAC += Random.Range(0, 99).ToString();
             }
         }
+
+        /*
         routingTable.Add("192.168.1.1");
         routingTable.Add("192.168.1.2");
         routingTable.Add("192.168.1.3");
         routingTable.Add("192.168.1.4");
         routingTable.Add("192.168.1.5");
-        ip = routingTable[4];
+        ip = routingTable[4];*/
 
         engine = GameObject.FindGameObjectWithTag("Engine");
         //set up ports
@@ -87,11 +93,25 @@ public class Router : MonoBehaviour {
             if(i >= numFEPorts)
             {
                 ports[i].Init("g0/" + (i-numFEPorts));
+                ports[i].gameObject.AddComponent<Subnet>();
+                
             } else
             {
                 ports[i].Init("fe0/" + i);
+                ports[i].gameObject.AddComponent<Subnet>();
             }
         }
+
+        //configure networks
+        ports[1].GetComponent<Subnet>().CreateConfiguration("192.168.1.0", "255.255.255.0", "192.168.1.1");
+        ports[2].GetComponent<Subnet>().CreateConfiguration("192.168.2.0", "255.255.255.0", "192.168.2.1");
+
+        //add server 1
+        gameObject.AddComponent<DHCPServer>();
+        gameObject.AddComponent<DHCPServer>();
+        servers = GetComponents<DHCPServer>();
+        servers[0].Setup(ports[1].GetComponent<Subnet>());
+        servers[1].Setup(ports[2].GetComponent<Subnet>());
     }
 
 	// Update is called once per frame
@@ -167,6 +187,17 @@ public class Router : MonoBehaviour {
 	 */
 	public void handlePacket(Packet packet, Port incomingPort) {
 		Debug.Log ("ROUTER: RECEIVED PACKET");
+
+        if (packet.type.Equals("DHCP"))
+        {
+            for(int i=0;i<servers.Length;i++)
+            {
+                if(servers[i].port.Equals(incomingPort.GetComponent<Port>()))
+                {
+                    servers[i].handle(packet);
+                }
+            }
+        }
 
         //if incoming packet is an ARP request addressed to this IP , return a reply
         if(packet.type.Equals("ARP") && packet.internet.getIP("dest").Equals(ip))

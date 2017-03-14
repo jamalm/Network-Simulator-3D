@@ -23,6 +23,7 @@ public class Port : MonoBehaviour {
     public string ip;
     public string mac;
     public Link link;
+    private Port endPort;
 
 	private string endPortMAC;			//MAC address of port on other end of cable (for switches)
 
@@ -262,11 +263,21 @@ public class Port : MonoBehaviour {
 
         Animate(packet);
         //tag packet with vlan
-        if(link.type.Equals("access"))
+        if(link.type.Equals("trunk"))
         {
-            packet.gameObject.AddComponent<Link>();
-            packet.gameObject.GetComponent<Link>().type = link.type;
-            packet.gameObject.GetComponent<Link>().vlan = link.vlan;
+            if(packet.gameObject.GetComponent<Link>())
+            {
+                packet.gameObject.GetComponent<Link>().type = link.type;
+                packet.gameObject.GetComponent<Link>().vlan = link.vlan;
+            }
+            else
+            {
+                packet.gameObject.AddComponent<Link>();
+                packet.gameObject.GetComponent<Link>().type = link.type;
+                packet.gameObject.GetComponent<Link>().vlan = link.vlan;
+            }
+            
+
         }
         if(connected)
         {
@@ -316,9 +327,8 @@ public class Port : MonoBehaviour {
 	public virtual void plugIn(Cable cable, Port endPort){
 		Debug.Log ("PORT: plugging in cable");
 		setCable(cable);
-		endPort.setCable(cable);
-		endPort.setConnection(true);
         setConnection(true);
+        this.endPort = endPort;
         
 		//if the port belongs to a switch
 		if (device.Equals ("switch")) {
@@ -347,29 +357,20 @@ public class Port : MonoBehaviour {
 	}
 		
 	//not tested
-	public void plugOut(Cable cable,Port endPort){
-        cable.unplug ();
-		this.cable = null;
+	public void plugOut(){
+		cable = null;
 		connected = false;
+        endPort = null;
         //TODO need to remove subnet details from routing table
-
-        endPort.cable.unplug();
-		endPort.cable = null;
-		endPort.connected = false;
         //TODO same here
 
 		setMAC(null);
         link.vlan = 0;
-		endPort.setMAC (null);
-        endPort.link.vlan = 0;
+        link.type = null;
         if(device.Equals("switch"))
         {
             endPortMAC = null;
-        } else if(endPort.device.Equals("switch"))
-        {
-            endPort.endPortMAC = null;
-        }
-
+        } 
 	}
 
 
