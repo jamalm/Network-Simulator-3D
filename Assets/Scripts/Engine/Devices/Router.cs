@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 
 /*************************************************
@@ -17,25 +17,26 @@ using System.Collections.Generic;
 
 public class Router : MonoBehaviour {
 
-	private List<string> routingTable;
+	//private List<string> routingTable;
 	public List<Port> ports;
 
 
     public Dictionary<string, Port> RoutingTable = new Dictionary<string, Port>();
     public int numFEPorts = 1;
-    public int numGPorts = 2;
+    public int numGPorts = 4;
     private string id;
     private string ip;
 	private string MAC;
 
     GameObject engine;
     public DHCPServer[] servers;
+    public ArpUpdate arp;
 
 
 
     public void Load(RouterData data)
     {
-        routingTable = data.routingTable;
+        //routingTable = data.routingTable;
         for(int i=0;i<ports.Count;i++)
         {
             ports[i].Load(data.ports[i]);
@@ -46,7 +47,7 @@ public class Router : MonoBehaviour {
     {
         RouterData data = new RouterData();
         data.MAC = MAC;
-        data.routingTable = routingTable;
+        //data.routingTable = routingTable;
         for(int i=0;i<ports.Count;i++)
         {
             data.ports[i] = ports[i].Save();
@@ -55,12 +56,13 @@ public class Router : MonoBehaviour {
     }
 
 	void Awake(){
-        routingTable = new List<string>();
+        //routingTable = new List<string>();
         ports = new List<Port>();
 	}
 
 	// Use this for initialization
 	void Start () {
+        arp = GetComponent<ArpUpdate>();
         int numPorts = numFEPorts + numGPorts;
         for (int i = 0; i < 6; i++)
         {
@@ -87,37 +89,54 @@ public class Router : MonoBehaviour {
         //set up ports
         for(int i=0;i<numPorts;i++)
         {
-            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
+            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab,transform.Find("PivotPoint").position, Quaternion.Euler(-90, -90, 0)));
             ports[i].transform.parent = transform;
 
             if(i >= numFEPorts)
             {
                 ports[i].Init("g0/" + (i-numFEPorts));
                 ports[i].gameObject.AddComponent<Subnet>();
-                
+                ports[i].GetComponent<Subnet>().CreateConfiguration("192.168." + ((i-numFEPorts) + 1) + ".0", "255.255.255.0", "192.168." + ((i - numFEPorts) + 1) + ".1");
+                gameObject.AddComponent<DHCPServer>();
+
             } else
             {
                 ports[i].Init("fe0/" + i);
                 ports[i].gameObject.AddComponent<Subnet>();
             }
         }
-
-        //configure networks
-        ports[1].GetComponent<Subnet>().CreateConfiguration("192.168.1.0", "255.255.255.0", "192.168.1.1");
-        ports[2].GetComponent<Subnet>().CreateConfiguration("192.168.2.0", "255.255.255.0", "192.168.2.1");
-
-        //add server 1
-        gameObject.AddComponent<DHCPServer>();
-        gameObject.AddComponent<DHCPServer>();
         servers = GetComponents<DHCPServer>();
-        servers[0].Setup(ports[1].GetComponent<Subnet>());
-        servers[1].Setup(ports[2].GetComponent<Subnet>());
+
+        int serverNum = 0;
+        for(int i=0;i<numPorts;i++)
+        {
+            if(ports[i].getType().Contains("g"))
+            {
+                servers[serverNum].Setup(ports[i].GetComponent<Subnet>());
+                RoutingTable.Add(ports[i].GetComponent<Subnet>().network, ports[i]);
+                serverNum++;
+            }
+        }
+
     }
 
 	// Update is called once per frame
 	void Update () {
 		//checkForNewComputers ();
 	}
+
+    public Port GetRoutePort(string ip)
+    {
+        Port port;
+        RoutingTable.TryGetValue(ip, out port);
+        return port;
+    }
+    public string GetRouteIP(Port port)
+    {
+        //return the ip that is attached to that port;
+        return RoutingTable.FirstOrDefault(route => route.Value == port).Key;
+    }
+
 
     public void SetID(string id)
     {
@@ -188,6 +207,7 @@ public class Router : MonoBehaviour {
 	public void handlePacket(Packet packet, Port incomingPort) {
 		Debug.Log ("ROUTER: RECEIVED PACKET");
 
+        //for dhcp
         if (packet.type.Equals("DHCP"))
         {
             for(int i=0;i<servers.Length;i++)
@@ -199,28 +219,32 @@ public class Router : MonoBehaviour {
             }
         }
 
-        //if incoming packet is an ARP request addressed to this IP , return a reply
-        if(packet.type.Equals("ARP") && packet.internet.getIP("dest").Equals(ip))
+        //for ping
+        if(packet.type.Equals("PING"))
         {
-            Packet arpRep = Instantiate(packet);
-            arpRep.CreatePacket("ARP");
-            arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
-            arpRep.internet.setIP(routingTable[0], "src");
-            arpRep.netAccess.setMAC(MAC, "src");
-            arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
-            ARP arp = arpRep.gameObject.GetComponent<ARP>();
-            arp.CreateARP("REPLY");
-            replyARP(arpRep ,incomingPort);
-            //TODO Separate local area and wide area requests... 
-
-            /*Packet arpRep = Instantiate(packet);
-            arpRep.internet.setIP(packet.internet.getIP("src"), "dest");    //set the src ip as our dest ip 
-            arpRep.internet.setIP(routingTable[0], "src");
-            arpRep.netAccess.setMAC(MAC, "src");
-            arpRep.netAccess.setMAC(packet.netAccess.getMAC("src"), "dest");
-            replyARP(arpRep, incomingPort);*/
+            
+            //get dest ip
+            string destIp = packet.GetComponent<ICMP>().ip;
+            //get network of dest ip
+            string destNetwork = incomingPort.GetComponent<Subnet>().GetNetworkFromIP(destIp);
+            Port outPort = GetRoutePort(destNetwork);
+            if(outPort != null)
+            {
+                packet.internet.setIP(destIp, "dest");
+                outPort.send(packet);
+            } else
+            {
+                Debug.LogAssertion(id + ": Dropping Ping, no routes found!");
+            }
         }
 
+        //for arp
+        //if incoming packet is an ARP request addressed to this IP , return a reply
+        if(packet.type.Equals("ARP") && packet.internet.getIP("dest").Equals(incomingPort.GetComponent<Subnet>().defaultGateway))
+        {
+            replyARP(arp.Reply(incomingPort.GetComponent<Subnet>().defaultGateway, packet.internet.getIP("src"), packet.netAccess.getMAC("src")) ,incomingPort);
+        }
+        /*
         for(int i = 0; i < routingTable.Count; i++)
         {
             
@@ -232,11 +256,12 @@ public class Router : MonoBehaviour {
             //if dest IP is on routing table, forward to the switch 
             //TODO foreign networks , different ip ranges ,
             //this should only be for local area network.
+            
             else if (packet.internet.getIP("dest").Equals(routingTable[i]))
             {
                 push(packet, incomingPort.getType());
             }
-        }
+        }*/
 	}
 
 

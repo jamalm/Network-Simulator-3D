@@ -307,15 +307,13 @@ public class Switch : MonoBehaviour {
                         Link vlanTag = packet.gameObject.AddComponent<Link>();
                         vlanTag.vlan = incomingPort.link.vlan;
                         //send packet through trunk
-                        return getPort(packet.netAccess.getMAC("dest"));
+                        return getPort(packet.netAccess.getMAC("dest")).send(packet);
                     }
                     else
                     {
                         return false;
                     }
                 }
-                //unknown case
-                return false;
             } //else if the mac address is broadcast, do it
             else if (packet.netAccess.getMAC("dest").Equals("FF:FF:FF:FF:FF:FF"))
             {

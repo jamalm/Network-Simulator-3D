@@ -11,6 +11,7 @@ public class SelectObject : MonoBehaviour {
 
     public GameObject editWindow;
     public EditScreen editScreen;
+    public PCConfig pcconfig;
 
     public Texture2D crosshairTexture;
 
@@ -21,7 +22,6 @@ public class SelectObject : MonoBehaviour {
         distance = 5;
         //hitting = false;
         obj = null;
-        editScreen = GetComponentInChildren<EditScreen>();
     }
 
     // Update is called once per frame
@@ -74,8 +74,8 @@ public class SelectObject : MonoBehaviour {
                 editWindow.SetActive(true);
                 editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in pc
-                //ConfigurationManager.config.RunPC(obj.GetComponent<PC>());
-                editScreen.OpenScreen("pc");
+                pcconfig.UpdatePC(obj.GetComponent<PC>());
+                editScreen.OpenScreen("pc", obj);
             }
             else if (obj.CompareTag("Switch"))
             {
@@ -83,7 +83,7 @@ public class SelectObject : MonoBehaviour {
                 editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in switch as inspected object
                 //ConfigurationManager.config.RunSwitch(obj.GetComponent<Switch>());
-                editScreen.OpenScreen("switch");
+                editScreen.OpenScreen("switch", obj);
             }
             else if (obj.CompareTag("Router"))
             {
@@ -91,7 +91,7 @@ public class SelectObject : MonoBehaviour {
                 editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in router
                 //ConfigurationManager.config.RunRouter(obj.GetComponent<Router>());
-                editScreen.OpenScreen("router");
+                editScreen.OpenScreen("router", obj);
             }
             //s.LoadSceneByIndex(4);
             

@@ -4,9 +4,11 @@ using System;
 public class ARP : MonoBehaviour
 {
     public string type;
+    public string ip;
     
-    public void CreateARP(string type)
+    public void CreateARP(string type, string ip)
     {
         this.type = type;
+        this.ip = ip;
     }
 }

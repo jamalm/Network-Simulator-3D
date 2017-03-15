@@ -34,16 +34,19 @@ public class PauseGame : MonoBehaviour
         Debug.Log("Game Paused: " + paused);
         if (paused == true)
         {
+            GetComponent<Movement>().enabled = false;
             HUD.SetActive(false);
             selectable.enabled = false;
             pausePanel.SetActive(true);
             LookAround.enabled = false;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Confined;
+            GameObject.FindGameObjectWithTag("EditWindow").SetActive(false);
             Time.timeScale = 0.0f;
         }
         else
         {
+            GetComponent<Movement>().enabled = true;
             HUD.SetActive(true);
             selectable.enabled = true;
             pausePanel.SetActive(false);

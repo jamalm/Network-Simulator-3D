@@ -135,7 +135,7 @@ public class Port : MonoBehaviour {
         link = GetComponent<Link>();
     }
 	void Start(){
-
+        
         
     }
 
@@ -231,37 +231,43 @@ public class Port : MonoBehaviour {
         arpTable.Add(IP, MAC);
     }
 
-
-	
-
 	// checks if the packet's destination ip has a mac address in the ARP table
-	public virtual bool isListed(Packet packet){
-		if (arpTable.ContainsKey (packet.internet.getIP ("dest"))) {
-			//checks if ip address is in arptable.
-			return true;
-		} else {
-			return false;
-		}
+	public virtual bool isListed(string ip){
+        return arpTable.ContainsKey(ip);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	//Send the specified packet.
 	public virtual bool send(Packet packet){
-		Debug.Log ("PORT: Sending packet through cable");
+        string mac;
+        
+        //if the arp table has record of the dest mac
+        if (arpTable.TryGetValue(packet.internet.getIP("dest"), out mac))
+        {
+            Debug.Log("PORT: Sending packet through cable");
+            packet.netAccess.setMAC(mac, "dest");
+        }
+        
+        //else if it is a broadcast mac or if it is a dhcp packet
+        else if (packet.netAccess.getMAC("dest").Equals("FF:FF:FF:FF:FF:FF") || packet.GetComponent<DHCP>())
+        {
+            Debug.Log("PORT: Sending packet through cable");
+        }
+        //else if the device is a switch and it doesnt have an arp table, just check the mac address only
+        else if(device.Equals("switch") && packet.netAccess.getMAC("dest").Equals(this.mac))
+        {
+            Debug.Log("PORT: Sending packet through cable");
+        }
+        else
+        {
+            Debug.LogAssertion("PORT: ERROR FINDING MAC ADDRESS BINDING");
+            return false;
+        }
 
-        Animate(packet);
+
+        /*while(Animate(packet))
+        {
+
+        }*/
         //tag packet with vlan
         if(link.type.Equals("trunk"))
         {
@@ -374,7 +380,7 @@ public class Port : MonoBehaviour {
 	}
 
 
-    private void Animate(Packet packet)
+    private bool Animate(Packet packet)
     {
         //animate packet being sent across the wire
         string to = "";
@@ -455,8 +461,8 @@ public class Port : MonoBehaviour {
         {
             GraphicManager.graphics.ARP(from, to, packet);
         }
-        
-        
+
+        return true;
     }
 }
 

@@ -11,6 +11,7 @@ TagManager:
   - PauseMenu
   - EditConfig
   - Engine
+  - EditWindow
   layers:
   - Default
   - TransparentFX

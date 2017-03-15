@@ -95,6 +95,7 @@ public class DHCPServer : MonoBehaviour {
         packet.netAccess.setMAC(GetComponent<Router>().getMAC(), "src");
         packet.netAccess.setMAC(packet.GetComponent<DHCP>().cliMac, "dest");
         //GetComponent<PC>().sendPacket(packet);
+        port.updateARPTable(packet.GetComponent<DHCP>().leaseAddr, packet.GetComponent<DHCP>().cliMac);
         port.send(packet);
     }
 

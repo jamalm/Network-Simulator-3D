@@ -5,7 +5,8 @@ public class ICMP : MonoBehaviour {
     //internet layer handling
 
     public string type;
-    
+    public string ip;
+
     /*
     public Packet CreatePacket(string IP, PC pc)
     {
@@ -15,9 +16,10 @@ public class ICMP : MonoBehaviour {
         return packet;
     }*/
 
-    public void CreateICMP(string type)
+    public void CreateICMP(string type, string ip)
     {
         this.type = type;
+        this.ip = ip;
     }
 }
 

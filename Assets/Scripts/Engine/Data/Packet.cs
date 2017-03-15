@@ -33,7 +33,7 @@ public class Packet : MonoBehaviour{
                 }
             case "ARP":
                 {
-                    app = new AppLayer("");
+                    app = new AppLayer("ARP");
                     trans = new TransLayer("");
                     internet = new InternetLayer("IP");
                     netAccess = new NALayer("Ethernet");

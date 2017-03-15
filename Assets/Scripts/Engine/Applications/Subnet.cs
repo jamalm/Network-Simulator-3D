@@ -56,7 +56,12 @@ public class Subnet : MonoBehaviour {
         }
     }
 
-    private bool ValidateMask(string mask)
+    public string GetNetworkFromIP(string ip)
+    {
+        return ResolveNetwork(ip);
+    }
+
+    public bool ValidateMask(string mask)
     {
         //split string up into octets
         string[] maskChunks = mask.Split('.');

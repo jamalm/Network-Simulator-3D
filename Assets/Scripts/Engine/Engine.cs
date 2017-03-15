@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Engine : MonoBehaviour {
 
@@ -91,15 +92,27 @@ public class Engine : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        float startTime, endtime;
         if (!connected)
         {
             connect();
         }
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
-
-            pcs[0].Ping(ping);
+            startTime = Time.realtimeSinceStartup;
+            //pcs[0].Ping(ping);
+            StartCoroutine(PING(pcs[0]));
+            endtime = Time.realtimeSinceStartup;
+            Debug.LogWarning("Time Taken to Complete Ping: " + (endtime - startTime));
         }
+
+    }
+
+    //test case
+    private IEnumerator PING(PC pc)
+    {
+        pc.Ping(ping);
+        yield return null;
     }
 
     public PC CreatePC(Transform transform)
@@ -177,7 +190,10 @@ public class Engine : MonoBehaviour {
                     //if switch has gotten it's share of pcs, move onto the next switch
                     if (p % switches.Count == 0)
                     {
-                        s++;
+                        if (s != switches.Count - 1)
+                        {
+                            s++;
+                        }
                     }
                     cables[cableCount].plug(switches[s].getNewPort("fe"), pcs[p].getNewPort());
                     cableCount++;

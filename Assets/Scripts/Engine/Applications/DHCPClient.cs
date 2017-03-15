@@ -16,6 +16,7 @@ public class DHCPClient : MonoBehaviour {
     STATE dhcpState;
     public GameObject packetPrefab;
     PC pc;
+    public string dhcpserver;
     
 
 	// Use this for initialization
@@ -98,6 +99,7 @@ public class DHCPClient : MonoBehaviour {
     {
         dhcpState = STATE.BOUND;
         DHCP dhcp = packet.gameObject.GetComponent<DHCP>();
+        dhcpserver = dhcp.servAddr;
         pc.GetComponent<Subnet>().SetConfiguration(dhcp);
     }
 
