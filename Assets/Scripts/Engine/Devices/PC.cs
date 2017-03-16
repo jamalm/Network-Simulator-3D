@@ -71,9 +71,11 @@ public class PC : MonoBehaviour {
         //setup ports
         for (int i=0;i<numPorts;i++)
         {
+            Vector3 position = new Vector3(0, 0.5f, 0);
             //instantiate port and set parent as this transform
-            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, transform.position, transform.rotation));
+            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, transform.position, Quaternion.identity));
             ports[i].transform.parent = transform;
+            ports[i].transform.localPosition = position;
 
             //set up type
             ports[i].Init("fe0/" + i);
@@ -107,43 +109,47 @@ public class PC : MonoBehaviour {
     {
         //regular expression to validate an ip 
         Regex ipRgx = new Regex(@"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$");
-        int count = 0;
-        int success = 0;
-        int failure = 0;
         if(!ipRgx.IsMatch(IP))
         {
             Debug.LogAssertion(id + ": Invalid IP address; Check format");
             return null;
         }
-        while(count < 4)
+        while(ping.count < 4)
         {
             if (!sendPacket(ping.Echo(IP)) )
             {
-                failure++;
+                ping.count++;
                 //if there is an active task on this, notify of failure
                 if(GetComponent<TaskWatcher>().isActive())
                 {
                     GetComponent<TaskWatcher>().PINGFailure();
                 }
-            }
-            else
+            } else
             {
-                success++;
+                ping.count++;
+            }
+            /*else
+            {
+                
                 if(GetComponent<TaskWatcher>().isActive())
                 {
                     GetComponent<TaskWatcher>().PINGSuccess();
                 }
-            }
-            count++;
+            }*/
+            
             
         }
-        Debug.LogAssertion("PING: Successful: " + success);
-        Debug.LogAssertion("PING: failed: " + failure);
+        ping.failure = ping.count - ping.success;
+        Debug.LogAssertion("PING: Successful: " + ping.success);
+        Debug.LogAssertion("PING: failed: " + ping.failure);
 
         string[] results = new string[3];
-        results[0] = count.ToString();
-        results[1] = success.ToString();
-        results[2] = failure.ToString();
+        results[0] = ping.count.ToString();
+        results[1] = ping.success.ToString();
+        results[2] = ping.failure.ToString();
+        ping.count = 0;
+        ping.success = 0;
+        ping.failure = 0;
         return results;
     }
 
@@ -248,7 +254,7 @@ public class PC : MonoBehaviour {
         //if it is a ping 
 		if (packet.type.Equals ("PING"))
         {
-            if(packet.GetComponent<ICMP>().type.Equals("ECHO"))
+            if(packet.GetComponent<ICMP>().type.Equals("ECHO") && packet.GetComponent<ICMP>().ip.Equals(IP))
             {
                 //pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
                 if (!sendPacket(ping.Reply(packet.internet.getIP("src"))))
@@ -260,7 +266,7 @@ public class PC : MonoBehaviour {
             }
             else if(packet.GetComponent<ICMP>().type.Equals("REPLY"))
             {
-                
+                ping.success++;
             }
         }
         //if it is an arp request

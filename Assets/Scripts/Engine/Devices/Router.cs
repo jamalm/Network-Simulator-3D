@@ -77,20 +77,14 @@ public class Router : MonoBehaviour {
             }
         }
 
-        /*
-        routingTable.Add("192.168.1.1");
-        routingTable.Add("192.168.1.2");
-        routingTable.Add("192.168.1.3");
-        routingTable.Add("192.168.1.4");
-        routingTable.Add("192.168.1.5");
-        ip = routingTable[4];*/
-
         engine = GameObject.FindGameObjectWithTag("Engine");
         //set up ports
         for(int i=0;i<numPorts;i++)
         {
-            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab,transform.Find("PivotPoint").position, Quaternion.Euler(-90, -90, 0)));
+            Vector3 position = new Vector3(-21 ,-15+(2*i), 0);
+            ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab,transform.Find("PivotPoint").position, Quaternion.identity));
             ports[i].transform.parent = transform;
+            ports[i].transform.localPosition = position;
 
             if(i >= numFEPorts)
             {

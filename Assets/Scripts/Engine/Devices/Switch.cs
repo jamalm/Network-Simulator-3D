@@ -63,10 +63,11 @@ public class Switch : MonoBehaviour {
         //initialising the ports
         for (int i=0;i<numPorts;i++)
         {
+            Vector3 position = new Vector3(-6+(1.5f*(i)), 6, -7);
             //instantiate port and set this to parent transform
             ports.Add(Instantiate(engine.GetComponent<Engine>().PortPrefab, transform.position, transform.rotation));
             ports[i].transform.parent = transform;
-
+            ports[i].transform.localPosition = position;
             //initialise the port types
             if(i >= numFEPorts)
             {

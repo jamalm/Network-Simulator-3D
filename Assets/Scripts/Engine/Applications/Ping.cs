@@ -4,13 +4,11 @@ using System.Collections;
 public class Ping : MonoBehaviour
 {
     public GameObject packetprefab;
-    public bool response; //for external response
-    private bool answer;    //to end loop
+    public int count, success, failure;
 
     void Start()
     {
-        response = false;
-        answer = false;
+        count = 0;success = 0;failure = 0;
     }
 
     private void Update()
@@ -45,7 +43,7 @@ public class Ping : MonoBehaviour
 
         return packet;
     }
-
+    /*
     public bool WaitForResponse(string IP)
     {
         StartCoroutine(Wait());
@@ -61,5 +59,5 @@ public class Ping : MonoBehaviour
         {
             answer = false;
         }
-    }
+    }*/
 }
