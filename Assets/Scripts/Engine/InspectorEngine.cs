@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class InspectorEngine : MonoBehaviour {
 
@@ -8,39 +7,22 @@ public class InspectorEngine : MonoBehaviour {
     public PC PCPrefab;
     public Switch SwitchPrefab;
     public Router RouterPrefab;
+    public Cable CablePrefab;
     public Port PortPrefab;
+    public Engine engine;
+    public bool pcs, routers, switches;
+
+
 
     // Use this for initialization
     void Start () {
-        
-        
-        
-    deviceType = ConfigurationManager.config.currentInspectable;
-        switch(deviceType)
-        {
-            case "PC":
-                {
-                    PC pc = (PC)Instantiate(PCPrefab, Vector3.zero, transform.rotation);
-                    pc.Load(ConfigurationManager.config.inspectorPC);
-                    //device = pc.GetComponent<GameObject>();
-                    break;
-                }
-                /*
-            case "Switch":
-                {
-                    Switch swit = GetComponent<Switch>();
-                    swit.Load(ConfigurationManager.config.inspectorSwitch);
-                    device = swit.GetComponent<GameObject>();
-                    break;
-                }
-            case "Router":
-                {
-                    Router router = GetComponent<Router>();
-                    router.Load(ConfigurationManager.config.inspectorRouter);
-                    device = router.GetComponent<GameObject>();
-                    break;
-                }*/
-        }
+
+        engine = gameObject.AddComponent<Engine>();
+        engine.PCPrefab = PCPrefab;
+        engine.RouterPrefab = RouterPrefab;
+        engine.SwitchPrefab = SwitchPrefab;
+        engine.CablePrefab = CablePrefab;
+        engine.PortPrefab = PortPrefab;
         
 	}
 	

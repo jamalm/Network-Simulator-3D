@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Cable : MonoBehaviour
 {
@@ -38,10 +37,22 @@ public class Cable : MonoBehaviour
     {
         port1.plugOut();
         port2.plugOut();
-        port1 = null;
-        port2 = null;
+        //port1 = null;
+        //port2 = null;
         plugged = false;
-        //Destroy(gameObject);
+        //hide physical cable and increase collider along the x axis
+        GetComponent<MeshRenderer>().enabled = false;
+        faulty = true;
+        GetComponent<BoxCollider>().size.Set(5, 1, 1);
+    }
+
+    public void replug()
+    {
+        GetComponent<MeshRenderer>().enabled = true;
+        faulty = false;
+        GetComponent<BoxCollider>().size.Set(1, 1, 1);
+        
+        plug(port1, port2);
     }
 
     

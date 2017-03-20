@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-public class InternetLayer : Layer {
+﻿public class InternetLayer : Layer {
 
 	private string srcIP,destIP;
 

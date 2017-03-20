@@ -16,13 +16,13 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 4000011667744954}
-  - 114: {fileID: 114000010181826782}
+  - component: {fileID: 4000011667744954}
+  - component: {fileID: 114000010181826782}
   m_Layer: 0
   m_Name: InspectorEngine
-  m_TagString: Untagged
+  m_TagString: Engine
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -36,10 +36,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114000010181826782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -56,5 +56,11 @@ MonoBehaviour:
     type: 2}
   RouterPrefab: {fileID: 114000011105707984, guid: 2a6ab74f8a238e442a449f01afa69117,
     type: 2}
-  PortPrefab: {fileID: 114000013786531402, guid: ac651dc3cdc9c0349a5687864231e411,
+  CablePrefab: {fileID: 114000011733917380, guid: 906c9a4d55a68434f8cb2932c094e746,
     type: 2}
+  PortPrefab: {fileID: 114764814828859844, guid: 7ac8b8e3e8cfc854a96be2eb85fe16a1,
+    type: 2}
+  engine: {fileID: 0}
+  pcs: 1
+  routers: 0
+  switches: 0

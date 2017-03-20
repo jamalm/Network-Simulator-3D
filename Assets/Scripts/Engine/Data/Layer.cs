@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public abstract class Layer
+﻿public abstract class Layer
 {
 	private bool active;
 	private string protocol;

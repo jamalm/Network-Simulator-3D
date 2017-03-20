@@ -12,6 +12,7 @@ TagManager:
   - EditConfig
   - Engine
   - EditWindow
+  - Cable
   layers:
   - Default
   - TransparentFX

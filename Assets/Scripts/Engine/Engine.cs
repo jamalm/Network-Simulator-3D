@@ -4,6 +4,7 @@ using System.Collections;
 
 public class Engine : MonoBehaviour {
 
+    public static Engine engine;
     public GraphicManager graphics;
 
     public List<PC> pcs = new List<PC>();
@@ -25,14 +26,24 @@ public class Engine : MonoBehaviour {
     private bool connected;
 
     public string ping;     //this is for testing
+    public bool dhcp;
 
     //formatting device placement
-    private float mapSize = 28;
-    private float pc_gap;
+    public float mapSize = 28;
+    public float pc_gap;
+    bool loaded;
 
     void Awake()
     {
-        
+        if (engine == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            engine = this;
+        }
+        else if (engine != this)
+        {
+            Destroy(gameObject);
+        }
 
     }
 
@@ -47,47 +58,16 @@ public class Engine : MonoBehaviour {
         pc_gap = mapSize / numPCs + 1;    //gap = size of the map / number of pcs
         Debug.Log("ENGINE: STARTED");
         LoadScene();
+        //GetComponent<Layout_Converter>().Scene();
     }
 
     public void LoadScene()
     {
-        //load PCs
-        
-        for (int i = 0; i < numPCs; i++)
-        {
-            pcs.Add(Instantiate(PCPrefab, new Vector3(-(mapSize / 2) + (pc_gap * i), transform.position.y, (mapSize / 2)), transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
-            pcs[i].SetID("PC" + (i + 1));
-            /*if(i==0)
-            {
-                //if first pc, set as dhcp server
-                pcs[i].gameObject.AddComponent<DHCPServer>();
-            } else
-            {*/
-            //otherwise its a client
-            pcs[i].gameObject.AddComponent<DHCPClient>();
-            //}
-            
-        }
-
-        //load Routers
-        for (int i = 0; i < numRouters; i++)
-        {
-            routers.Add(Instantiate(RouterPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
-            routers[i].SetID("Router" + (i + 1));
-        }
-
-
-
-        //load Switches
-        for (int i = 0; i < numSwitches; i++)
-        {
-            switches.Add((Switch)Instantiate(SwitchPrefab, new Vector3(5 * i, -0.5f, 0), transform.rotation));
-            switches[i].SetID("Switch" + (i + 1));
-        }
-
-
+        //load devices
+        LoadPCs();
+        LoadRouters();
+        LoadSwitches();
         loadCables();
-        //SaveConfig();
     }
 
     // Update is called once per frame
@@ -170,20 +150,48 @@ public class Engine : MonoBehaviour {
         connected = true;
         int s = -1;  //for pc/switch dividing 
 
-        for (int i=0;i<numRouters;i++)
+        if(numRouters > 0)
         {
-
-            //for each switch
-            for(int j=0;j<switches.Count;j++)
+            for (int i = 0; i < numRouters; i++)
             {
-                //connect the ports between the switch and router
-                cables[cableCount].plug(switches[j].getNewPort("g"), routers[i].getNewPort("g"));
-                cableCount++;
-                
+
+                //for each switch
+                for (int j = 0; j < switches.Count; j++)
+                {
+                    //connect the ports between the switch and router
+                    cables[cableCount].plug(switches[j].getNewPort("g"), routers[i].getNewPort("g"));
+                    cableCount++;
+
+                }
+                for (int p = 0; p < pcs.Count; p++)
+                {
+
+                    //if theres more than one switch, divde the pcs up into fair sections for the switches
+                    if (switches.Count > 1)
+                    {
+                        //if switch has gotten it's share of pcs, move onto the next switch
+                        if (p % switches.Count == 0)
+                        {
+                            if (s != switches.Count - 1)
+                            {
+                                s++;
+                            }
+                        }
+                        cables[cableCount].plug(switches[s].getNewPort("fe"), pcs[p].getNewPort());
+                        cableCount++;
+                    }
+                    else
+                    {
+                        cables[cableCount].plug(switches[s + 1].getNewPort("fe"), pcs[p].getNewPort());
+                        cableCount++;
+                    }
+                }
             }
+        } else
+        {
             for (int p = 0; p < pcs.Count; p++)
             {
-                
+
                 //if theres more than one switch, divde the pcs up into fair sections for the switches
                 if (switches.Count > 1)
                 {
@@ -200,11 +208,12 @@ public class Engine : MonoBehaviour {
                 }
                 else
                 {
-                    cables[cableCount].plug(switches[s+1].getNewPort("fe"), pcs[p].getNewPort());
+                    cables[cableCount].plug(switches[s + 1].getNewPort("fe"), pcs[p].getNewPort());
                     cableCount++;
                 }
             }
         }
+       
         /*
         //connect devices to switch
         for (int i = 0; i < switches.Count; i++)
@@ -247,6 +256,36 @@ public class Engine : MonoBehaviour {
         }*/
     }
 
+    public void LoadPCs()
+    {
+        //Load PC's
+        for (int i = 0; i < numPCs; i++)
+        {
+            pcs.Add(Instantiate(PCPrefab, new Vector3(-(mapSize / 2) + (pc_gap * i), transform.position.y, (mapSize / 2)), transform.rotation * Quaternion.AngleAxis(-90, Vector3.right)));
+            pcs[i].SetID("PC" + (i + 1));
+            pcs[i].gameObject.AddComponent<DHCPClient>();
+            pcs[i].dhcpEnabled = dhcp;
+        }
+    }
+    public void LoadRouters()
+    {
+        //load Routers
+        for (int i = 0; i < numRouters; i++)
+        {
+            routers.Add(Instantiate(RouterPrefab, new Vector3(5 * i, 0, -10), Quaternion.Euler(-90, -90, 0)));
+            routers[i].SetID("Router" + (i + 1));
+        }
+    }
+    public void LoadSwitches()
+    {
+        //load Switches
+        for (int i = 0; i < numSwitches; i++)
+        {
+            switches.Add((Switch)Instantiate(SwitchPrefab, new Vector3(5 * i, -0.5f, 0), transform.rotation));
+            switches[i].SetID("Switch" + (i + 1));
+        }
+    }
+
     private Vector3 CablesPosition(Vector3 pos)
     {
         
@@ -258,74 +297,117 @@ public class Engine : MonoBehaviour {
         int r = -1;
         int s = -1;
         float percentage = 0.0f;
-        percentage = numSwitches / numRouters;
-        for(int i=0;i<numSwitches;i++)
+        if(numRouters > 0)
         {
-            
-            if(numRouters > 1)
+            percentage = numSwitches / numRouters;
+            for (int i = 0; i < numSwitches; i++)
             {
-                
-                if(i % percentage == 0)
+
+                if (numRouters > 1)
                 {
-                    if(r != numRouters-1)
+
+                    if (i % percentage == 0)
                     {
-                        r++;
+                        if (r != numRouters - 1)
+                        {
+                            r++;
+                        }
                     }
+                    //for routers with switches
+                    Vector3 routerPos = routers[r].transform.Find("PivotPoint").position;
+                    Vector3 switPos = new Vector3(switches[i].transform.position.x, 0.0f, switches[i].transform.position.z);
+                    Vector3 distance = (switPos - routerPos) * 0.5f;
+                    cables.Add(Instantiate(CablePrefab, routerPos + distance, transform.rotation));
+                    cables[i].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(switPos, routerPos));
+                    cables[i].transform.LookAt(routerPos);
+
+
                 }
-                //for routers with switches
-                Vector3 routerPos = routers[r].transform.Find("PivotPoint").position;
-                Vector3 switPos = new Vector3(switches[i].transform.position.x, 0.0f, switches[i].transform.position.z);
-                Vector3 distance = (switPos - routerPos) * 0.5f;
-                cables.Add(Instantiate(CablePrefab, routerPos + distance, transform.rotation));
-                cables[i].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(switPos, routerPos));
-                cables[i].transform.LookAt(routerPos);
-                
+                else
+                {
+                    Vector3 routerPos = routers[r + 1].transform.Find("PivotPoint").position;
+                    Vector3 switPos = new Vector3(switches[i].transform.position.x, 0.0f, switches[i].transform.position.z);
+                    Vector3 distance = (switPos - routerPos) * 0.5f;
+                    cables.Add(Instantiate(CablePrefab, routerPos + distance, transform.rotation));
+                    cables[i].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(switPos, routerPos));
+                    cables[i].transform.LookAt(routerPos);
+                }
+            }
+            percentage = numPCs / numSwitches;
+            for (int i = 0; i < numPCs; i++)
+            {
+
+                if (numSwitches > 1)
+                {
+                    if (i % percentage == 0)
+                    {
+                        if (s != numSwitches - 1)
+                        {
+                            //this is to prevent out of bounds, just assign all remaining pc's to end computer
+                            s++;
+                        }
+
+                    }
+                    //for switches with pcs
+                    Vector3 switPos = new Vector3(switches[s].transform.position.x, 0.0f, switches[s].transform.position.z);
+                    Vector3 pcPos = pcs[i].transform.position;
+                    Vector3 distance = (pcPos - switPos) * 0.5f;
+                    cables.Add(Instantiate(CablePrefab, switPos + distance, transform.rotation));
+                    cables[i + numSwitches].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(pcPos, switPos));
+                    cables[i + numSwitches].transform.LookAt(switPos);
+                }
+                else
+                {
+                    //for switches with pcs
+                    Vector3 switPos = new Vector3(switches[s + 1].transform.position.x, 0.0f, switches[s + 1].transform.position.z);
+                    Vector3 pcPos = pcs[i].transform.position;
+                    Vector3 distance = (pcPos - switPos) * 0.5f;
+                    cables.Add(Instantiate(CablePrefab, switPos + distance, transform.rotation));
+                    cables[i + numSwitches].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(pcPos, switPos));
+                    cables[i + numSwitches].transform.LookAt(switPos);
+                }
 
             }
-            else
-            {
-                Vector3 routerPos = routers[r+1].transform.Find("PivotPoint").position;
-                Vector3 switPos = new Vector3(switches[i].transform.position.x, 0.0f, switches[i].transform.position.z);
-                Vector3 distance = (switPos - routerPos) * 0.5f;
-                cables.Add(Instantiate(CablePrefab, routerPos + distance, transform.rotation));
-                cables[i].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(switPos, routerPos));
-                cables[i].transform.LookAt(routerPos);
-            }
         }
-        percentage = numPCs / numSwitches;
-        for(int i=0;i<numPCs;i++)
+        else
         {
-            
-            if(numSwitches > 1)
+            percentage = numPCs / numSwitches;
+            for (int i = 0; i < numPCs; i++)
             {
-                if(i % percentage == 0)
+
+                if (numSwitches > 1)
                 {
-                    if(s != numSwitches-1)
-                    { 
-                        //this is to prevent out of bounds, just assign all remaining pc's to end computer
-                        s++;
+                    if (i % percentage == 0)
+                    {
+                        if (s != numSwitches - 1)
+                        {
+                            //this is to prevent out of bounds, just assign all remaining pc's to end computer
+                            s++;
+                        }
+
                     }
-                    
+                    //for switches with pcs
+                    Vector3 switPos = new Vector3(switches[s].transform.position.x, 0.0f, switches[s].transform.position.z);
+                    Vector3 pcPos = pcs[i].transform.position;
+                    Vector3 distance = (pcPos - switPos) * 0.5f;
+                    cables.Add(Instantiate(CablePrefab, switPos + distance, transform.rotation));
+                    cables[i].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(pcPos, switPos));
+                    cables[i].transform.LookAt(switPos);
                 }
-                //for switches with pcs
-                Vector3 switPos = new Vector3(switches[s].transform.position.x, 0.0f, switches[s].transform.position.z);
-                Vector3 pcPos = pcs[i].transform.position;
-                Vector3 distance = (pcPos - switPos) * 0.5f;
-                cables.Add(Instantiate(CablePrefab, switPos + distance, transform.rotation));
-                cables[i + numSwitches].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(pcPos, switPos));
-                cables[i + numSwitches].transform.LookAt(switPos);
-            } else
-            {
-                //for switches with pcs
-                Vector3 switPos = new Vector3(switches[s+1].transform.position.x, 0.0f, switches[s+1].transform.position.z);
-                Vector3 pcPos = pcs[i].transform.position;
-                Vector3 distance = (pcPos - switPos) * 0.5f;
-                cables.Add(Instantiate(CablePrefab, switPos + distance, transform.rotation));
-                cables[i + numSwitches].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(pcPos, switPos));
-                cables[i + numSwitches].transform.LookAt(switPos);
+                else
+                {
+                    //for switches with pcs
+                    Vector3 switPos = new Vector3(switches[s + 1].transform.position.x, 0.0f, switches[s + 1].transform.position.z);
+                    Vector3 pcPos = pcs[i].transform.position;
+                    Vector3 distance = (pcPos - switPos) * 0.5f;
+                    cables.Add(Instantiate(CablePrefab, switPos + distance, transform.rotation));
+                    cables[i].transform.localScale = new Vector3(0.1f, 0.1f, Vector3.Distance(pcPos, switPos));
+                    cables[i].transform.LookAt(switPos);
+                }
+
             }
-            
         }
+        
 
 
         /*

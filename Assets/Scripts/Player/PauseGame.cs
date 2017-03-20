@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 
 public class PauseGame : MonoBehaviour
 {
@@ -10,10 +8,12 @@ public class PauseGame : MonoBehaviour
     public LookAtMouse LookAround;
     public GameObject HUD;
     private SelectObject selectable;
+    public bool flatSceneEnabled;
 
     // Use this for initialization
     void Start()
     {
+        flatSceneEnabled = false;
         paused = false;
         LookAround = GetComponent<LookAtMouse>();
         selectable = GetComponent<SelectObject>();
@@ -46,14 +46,22 @@ public class PauseGame : MonoBehaviour
         }
         else
         {
-            GetComponent<Movement>().enabled = true;
-            HUD.SetActive(true);
-            selectable.enabled = true;
-            pausePanel.SetActive(false);
-            LookAround.enabled = true;
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            Time.timeScale = 1.0f;
+            if(!flatSceneEnabled)
+            {
+                GetComponent<Movement>().enabled = true;
+                HUD.SetActive(true);
+                selectable.enabled = true;
+                pausePanel.SetActive(false);
+                LookAround.enabled = true;
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Time.timeScale = 1.0f;
+            }
+            else
+            {
+                pausePanel.SetActive(false);
+                Time.timeScale = 1.0f;
+            }
         }
     }
 

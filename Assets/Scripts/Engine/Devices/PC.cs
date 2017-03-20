@@ -107,6 +107,9 @@ public class PC : MonoBehaviour {
 
     public string[] Ping(string IP)
     {
+        ping.count = 0;
+        ping.success = 0;
+        ping.failure = 0;
         //regular expression to validate an ip 
         Regex ipRgx = new Regex(@"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$");
         if(!ipRgx.IsMatch(IP))
@@ -147,9 +150,8 @@ public class PC : MonoBehaviour {
         results[0] = ping.count.ToString();
         results[1] = ping.success.ToString();
         results[2] = ping.failure.ToString();
-        ping.count = 0;
-        ping.success = 0;
-        ping.failure = 0;
+
+        
         return results;
     }
 

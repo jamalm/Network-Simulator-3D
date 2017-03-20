@@ -43,7 +43,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000010282088858}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.25869325, y: -1.2422184e-17, z: 0.55944544}
+  m_LocalPosition: {x: 5.904597, y: 4.679819, z: 20.17778}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -173,6 +173,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packetprefab: {fileID: 1047894446087254, guid: 1a85c49f2635db047ae440d27402809c,
     type: 2}
+  count: 0
+  success: 0
+  failure: 0
 --- !u!114 &114878233571815528
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,7 +1,4 @@
-﻿using System;
-
-
-public class TransLayer : Layer
+﻿public class TransLayer : Layer
 {
 	public TransLayer (string protocol)
 	{

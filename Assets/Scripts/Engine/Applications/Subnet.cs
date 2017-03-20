@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System;
+﻿using System;
 using UnityEngine;
 
 public class Subnet : MonoBehaviour {
@@ -40,7 +39,7 @@ public class Subnet : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        //ValidateMask(mask);
 	}
 
     public bool CheckNetwork(string destIP)

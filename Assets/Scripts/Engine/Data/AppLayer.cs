@@ -1,6 +1,4 @@
-﻿using System;
-
-public class AppLayer : Layer
+﻿public class AppLayer : Layer
 {
 	private string protocol;
 

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class SelectObject : MonoBehaviour {
 
@@ -92,6 +91,18 @@ public class SelectObject : MonoBehaviour {
                 //pass in router
                 //ConfigurationManager.config.RunRouter(obj.GetComponent<Router>());
                 editScreen.OpenScreen("router", obj);
+            }
+            else if(obj.CompareTag("Cable"))
+            {
+                //remove cable 
+                if(obj.GetComponent<Cable>().plugged)
+                {
+                    obj.GetComponent<Cable>().unplug();
+                }
+                else
+                {
+                    obj.GetComponent<Cable>().replug();
+                }
             }
             //s.LoadSceneByIndex(4);
             

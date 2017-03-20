@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4000010669654198}
   - component: {fileID: 114000012945650840}
   - component: {fileID: 114704294734433592}
+  - component: {fileID: 114483727877378218}
   m_Layer: 0
   m_Name: Engine
   m_TagString: Engine
@@ -70,6 +71,21 @@ MonoBehaviour:
   numRouters: 0
   numSwitches: 0
   ping: 192.168.2.2
+  dhcp: 0
+  mapSize: 28
+  pc_gap: 0
+--- !u!114 &114483727877378218
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011942438110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c76d728b10ee15b408cba760bc170b67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inspector: 1
 --- !u!114 &114704294734433592
 MonoBehaviour:
   m_ObjectHideFlags: 1

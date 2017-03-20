@@ -333,7 +333,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 621323487}
-  - {fileID: 911966567}
+  - {fileID: 1134973912}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -434,10 +434,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 621323486}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &911966567 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 400000, guid: d940e636fd44be84e9b7e8da46f700ef, type: 2}
-  m_PrefabInternal: {fileID: 1134973911}
 --- !u!1001 &1134973911
 Prefab:
   m_ObjectHideFlags: 0
@@ -480,6 +476,10 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d940e636fd44be84e9b7e8da46f700ef, type: 2}
   m_IsPrefabParent: 0
+--- !u!4 &1134973912 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 1134973911}
 --- !u!1 &1171085050
 GameObject:
   m_ObjectHideFlags: 0

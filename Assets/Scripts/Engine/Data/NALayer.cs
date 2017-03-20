@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-public class NALayer : Layer {
+﻿public class NALayer : Layer {
 
 	//for ethernet protocol
 	public string destMAC;
