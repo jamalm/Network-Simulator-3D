@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 114154674251605668}
   m_Layer: 0
   m_Name: Router
-  m_TagString: Device
+  m_TagString: Router
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

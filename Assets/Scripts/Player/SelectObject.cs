@@ -11,6 +11,7 @@ public class SelectObject : MonoBehaviour {
     public GameObject editWindow;
     public EditScreen editScreen;
     public PCConfig pcconfig;
+    public RouterConfig routerconfig;
 
     public Texture2D crosshairTexture;
 
@@ -66,7 +67,7 @@ public class SelectObject : MonoBehaviour {
         
         if (obj != null)
         {
-            
+            Debug.Log("Object: " + obj);
             //LoadScene s = obj.GetComponent<LoadScene>();
             if (obj.CompareTag("PC"))
             {
@@ -89,7 +90,7 @@ public class SelectObject : MonoBehaviour {
                 editWindow.SetActive(true);
                 editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in router
-                //ConfigurationManager.config.RunRouter(obj.GetComponent<Router>());
+                routerconfig.UpdateRouter(obj.GetComponent<Router>());
                 editScreen.OpenScreen("router", obj);
             }
             else if(obj.CompareTag("Cable"))

@@ -26,7 +26,6 @@ public class AddItem : MonoBehaviour
     public void Remove()
     {
         list.ClearOptions();
-
     }
 
     private void Update()
