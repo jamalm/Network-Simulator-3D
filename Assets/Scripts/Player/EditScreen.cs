@@ -13,8 +13,15 @@ public class EditScreen : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		
-	}
+        //mainInputField.onEndEdit.AddListener(delegate { LockInput(mainInputField); });
+        if(inputs != null)
+        {
+            for(int i=0;i<inputs.Length;i++)
+            {
+                inputs[i].onEndEdit.AddListener(delegate { ConfigureDevice(); });
+            }
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -23,17 +30,20 @@ public class EditScreen : MonoBehaviour {
             //close screen
             CloseScreen();
         }
-        if(inputs != null && dev != null)
+	}
+
+    void ConfigureDevice()
+    {
+        if(dev != null)
         {
             if(dev.GetComponent<PC>())
             {
+                PC pc = dev.GetComponent<PC>();
+                pc.subnet.EditScreenConfig(pc.IP);
                 ConfigurePC(dev.GetComponent<PC>());
             }
-
         }
-        
-        
-	}
+    }
 
     public void OpenScreen(string device, GameObject obj)
     {
@@ -82,7 +92,8 @@ public class EditScreen : MonoBehaviour {
 
     private void ConfigurePC(PC pc)
     {
-
+        
+        
         //for data: 
         /*
          * 1. Subnet(subnet mask, gateway)

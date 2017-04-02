@@ -26,21 +26,24 @@ public class Switch : MonoBehaviour {
 
     public void Load(SwitchData data)
     {
-        for (int i = 0; i < ports.Count; i++)
+        /* (int i = 0; i < ports.Count; i++)
         {
             ports[i].Load(data.ports[i]);
         }
-        macTable = data.mactable;
+        macTable = data.mactable;*/
+        numFEPorts = data.numFEPorts;
+        numGPorts = data.numGPorts;
     }
     public SwitchData Save()
     {
         SwitchData data = new SwitchData();
-        data.mactable = macTable;
+        /*data.mactable = macTable;
         for(int i=0;i<ports.Count;i++)
         {
             data.ports[i] = ports[i].Save();
-        }
-
+        }*/
+        data.numGPorts = numGPorts;
+        data.numFEPorts = numFEPorts;
         return data;
     }
 

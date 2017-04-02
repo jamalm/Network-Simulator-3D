@@ -37,6 +37,8 @@ public class SaveGame : MonoBehaviour
     public void SaveNew(InputField field)
     {
         string filename = "/" + field.text + ".ns";
+        GameObject eng = GameObject.FindGameObjectWithTag("Engine");
+        eng.GetComponent<Engine>().SaveConfig();
         ConfigurationManager.config.Save(filename);
     }
 

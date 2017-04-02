@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4000012378310486}
   - component: {fileID: 114000011208976102}
   - component: {fileID: 114823572316737168}
+  - component: {fileID: 114305832979915194}
   m_Layer: 0
   m_Name: Configuration
   m_TagString: Untagged
@@ -52,12 +53,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e6a310f9d0abb40838c9cca46e4cb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loader: {fileID: 0}
+  loader: {fileID: 114305832979915194}
   filename: 
+  brokenCableList: 0100000004000000
   numPCs: 4
   numRouters: 1
   numSwitches: 2
   currentInspectable: 
+--- !u!114 &114305832979915194
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011425144576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6210378cc58ef2499b0376dfbac9489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114823572316737168
 MonoBehaviour:
   m_ObjectHideFlags: 1

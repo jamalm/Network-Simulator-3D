@@ -9,7 +9,7 @@ public class EditConfiguration : MonoBehaviour
     public GameObject PCPanel, RouterPanel, SwitchPanel;
 
 
-
+    /*
     //select panel based on device selected in dropdown
     public void PanelSelect()
     {
@@ -42,7 +42,7 @@ public class EditConfiguration : MonoBehaviour
         }
 
     }
-
+    
     private void UpdatePCData(string value, string type)
     {
         int deviceIndex = list.value;
@@ -109,7 +109,7 @@ public class EditConfiguration : MonoBehaviour
         devices.switches[deviceIndex]. = value;
     }*/
 
-
+    /*
     public void UpdatePCIP(InputField field)
     {
 
@@ -137,4 +137,5 @@ public class EditConfiguration : MonoBehaviour
 
 
     //more methods can be added to accomodate more fields
+    */
 }

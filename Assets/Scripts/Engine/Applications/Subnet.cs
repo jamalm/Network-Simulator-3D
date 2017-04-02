@@ -227,7 +227,7 @@ public class Subnet : MonoBehaviour {
         
     }
 
-    public void CreateConfiguration(string net, string mask, string gateway)
+    public void CreateRouteConfiguration(string net, string mask, string gateway)
     {
         network = net;
         this.mask = mask;
@@ -235,6 +235,31 @@ public class Subnet : MonoBehaviour {
         defaultGateway = gateway;
         broadcast = ResolveBroadcast(gateway);
         
+        CalculateCIDR();
+    }
+
+    public void EditScreenConfig(string ip)
+    {
+        network = ResolveNetwork(ip);
+        validMask = ValidateMask(mask);
+        if(defaultGateway == "")
+        {
+            broadcast = "255.255.255.255";
+            
+        } else
+        {
+            
+            broadcast = ResolveBroadcast(defaultGateway);
+        }
+        CalculateCIDR();
+    }
+
+    public void LoadFreshConfig(string ip, string mask, string gate)
+    {
+        this.mask = mask;
+        network = ResolveNetwork(ip);
+        defaultGateway = gate;
+        broadcast = ResolveBroadcast(defaultGateway);
         CalculateCIDR();
     }
 

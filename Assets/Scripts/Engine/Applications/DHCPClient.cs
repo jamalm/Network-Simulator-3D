@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DHCPClient : MonoBehaviour {
 
-    enum STATE
+    public enum STATE
     {
         INIT,
         SELECT,
@@ -12,7 +12,7 @@ public class DHCPClient : MonoBehaviour {
         RENEW
     }
 
-    STATE dhcpState;
+    public STATE dhcpState;
     public GameObject packetPrefab;
     PC pc;
     public string dhcpserver;
@@ -22,24 +22,28 @@ public class DHCPClient : MonoBehaviour {
 	void Start () {
         pc = GetComponent<PC>();
         packetPrefab = GetComponent<Ping>().packetprefab;
-
+        dhcpState = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (pc.dhcpEnabled && pc.IP.Equals("0.0.0.0") && GameController.gameState.netState == GameController.NetworkState.ACTIVE)
+        if (pc.dhcpEnabled && dhcpState == STATE.INIT && GameController.gameState.netState == GameController.NetworkState.ACTIVE)
         {
             StartCoroutine(Discovery());
             if(pc.IP.Equals("0.0.0.0"))
                 GetComponent<Subnet>().SetDefaultConfiguration();
         }
+        if(!pc.dhcpEnabled && dhcpState == STATE.BOUND)
+        {
+            Release();
+        }
     }
 
     private void Discover()
     {
+        dhcpState = STATE.SELECT;
         //initialisation stage
-        dhcpState = STATE.INIT;
         GameObject dhcpPacket = Instantiate(packetPrefab);
         
         //setup packet
@@ -62,7 +66,6 @@ public class DHCPClient : MonoBehaviour {
 
         //send packet out to network
         pc.sendPacket(packet);
-        dhcpState = STATE.SELECT;
         
     }
 
@@ -91,7 +94,29 @@ public class DHCPClient : MonoBehaviour {
 
     public void Release()
     {
+        GameObject dhcpPacket = Instantiate(packetPrefab);
 
+        Packet packet = dhcpPacket.GetComponent<Packet>();
+        packet.CreatePacket("DHCP");
+        packet.internet.setIP(pc.IP, "src");
+        packet.internet.setIP(dhcpserver, "dest");
+        packet.netAccess.setMAC("FF:FF:FF:FF:FF:FF", "dest");
+        packet.netAccess.setMAC(pc.MAC, "src");
+
+        //attach dhcp component
+        packet.gameObject.AddComponent<DHCP>();
+        DHCP dhcp = packet.GetComponent<DHCP>();
+        dhcp.CreateDHCP("DHCPRELEASE");
+
+        //populate with data
+        dhcp.cliAddr = pc.IP;
+        dhcp.cliMac = pc.MAC;
+        dhcp.leaseAddr = pc.IP;
+        dhcp.servAddr = dhcpserver;
+
+        dhcpState = STATE.INIT;
+
+        pc.sendPacket(packet);
     }
 
     private void UseConfig(Packet packet)

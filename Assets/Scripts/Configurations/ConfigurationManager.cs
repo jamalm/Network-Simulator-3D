@@ -5,18 +5,31 @@ using System.IO;
 
 public class ConfigurationManager : MonoBehaviour
 {
+
+    /*
+     * Config manager tells Engine what to load
+     * Number of devices: PCs, Switches, Routers
+     * Device Configurations: 
+     * PC: IP, MAC, mask, default gateway
+     * Router: 
+     * Switch: 
+     */
     public static ConfigurationManager config;
     public DataLoader loader;
     public string filename;
 
+    /// <summary>
+    /// Configuration data for loading level
+    /// </summary>
     public List<PCData> pcs = new List<PCData>();
     public List<RouterData> routers = new List<RouterData>();
     public List<SwitchData> switches = new List<SwitchData>();
-
+    public List<int> brokenCableList;
     public int numPCs;
     public int numRouters;
     public int numSwitches;
 
+    //redundant
     public PCData inspectorPC;
     public SwitchData inspectorSwitch;
     public RouterData inspectorRouter;
@@ -34,10 +47,12 @@ public class ConfigurationManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        Load(filename);
     }
 
     private void Start()
     {
+        
     }
 
     private void Update()
@@ -45,10 +60,33 @@ public class ConfigurationManager : MonoBehaviour
 
     }
 
+    /*
+     * Methods to get data from file for each device
+     */
+    public PCData GetPCData(int index)
+    {
+        return pcs[index];
+    }
+    public SwitchData GetSwitchData(int index)
+    {
+        return switches[index];
+    }
+    public RouterData GetRouterData(int index)
+    {
+        return routers[index];
+    }
+
+
+
+
+
+
+    //save game here
     public void Save(string filename)
     {
-        loader.Save(filename, pcs, routers, switches);
+        loader.Save(filename, pcs, routers, switches, brokenCableList);
     }
+    //might be used in the future
     public List<string> LoadAllFiles()
     {
         List<string> saved = new List<string>();
@@ -60,18 +98,23 @@ public class ConfigurationManager : MonoBehaviour
 
         return saved;
     }
+    //load files for new level
     public void Load(string filename)
     {
         Configuration data = (Configuration)loader.Load(filename);
         if(data != null)
         {
-            pcs = data.pcs;
-            routers = data.routers;
-            switches = data.switches;
+            pcs = data.GetPCs();
+            routers = data.GetRouters();
+            switches = data.GetSwitches();
+            numPCs = pcs.Count;
+            numSwitches = switches.Count;
+            numRouters = routers.Count;
+            brokenCableList = data.GetBrokenCables();
         }
     }
 
-
+    /*
     public void RunPC(PC pc)
     {
         inspectorPC = pc.Save();
@@ -87,7 +130,7 @@ public class ConfigurationManager : MonoBehaviour
         inspectorRouter = router.Save();
         currentInspectable = "Router";
     }
-
+    */
 
     
 }
@@ -96,27 +139,60 @@ public class ConfigurationManager : MonoBehaviour
 [Serializable]
 class Configuration
 {
-    public List<Task> tasks;
-    public List<PCData> pcs;
-    public List<RouterData> routers;
-    public List<SwitchData> switches;
+    //device info
+    List<PCData> pcs;
+    List<RouterData> routers;
+    List<SwitchData> switches;
 
-    //data kept here
+    //misc data
+    List<Task> tasks;
+    List<int> brokenCables;
+
+    //constructor with tasks 
     public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<Task> tasks)
     {
         //constructor
         this.pcs = pcs;
+
         this.routers = routers;
+
         this.switches = switches;
+
         this.tasks = tasks;
     }
 
-    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers)
+    //constructor without tasks
+    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken)
     {
         //constructor
         this.pcs = pcs;
+
         this.routers = routers;
+
         this.switches = switches;
+
         tasks = null;
+        brokenCables = broken;    //for now they are null
+    }
+
+    public List<PCData> GetPCs()
+    {
+        return pcs;
+    }
+    public List<RouterData> GetRouters()
+    {
+        return routers;
+    }
+    public List<SwitchData> GetSwitches()
+    {
+        return switches;
+    }
+    public List<int> GetBrokenCables()
+    {
+        return brokenCables;
+    }
+    public List<Task> GetTasks()
+    {
+        return tasks;
     }
 }

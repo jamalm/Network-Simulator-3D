@@ -25,7 +25,6 @@ public class Router : MonoBehaviour {
     public int numFEPorts = 1;
     public int numGPorts = 4;
     private string id;
-    private string ip;
 	private string MAC;
 
     GameObject engine;
@@ -33,25 +32,18 @@ public class Router : MonoBehaviour {
     public ArpUpdate arp;
 
 
-
+    
     public void Load(RouterData data)
     {
         //routingTable = data.routingTable;
-        for(int i=0;i<ports.Count;i++)
-        {
-            ports[i].Load(data.ports[i]);
-        }
-        MAC = data.MAC;
+        numFEPorts = data.numFEPorts;
+        numGPorts = data.numGPorts;
     }
     public RouterData Save()
     {
         RouterData data = new RouterData();
-        data.MAC = MAC;
-        //data.routingTable = routingTable;
-        for(int i=0;i<ports.Count;i++)
-        {
-            data.ports[i] = ports[i].Save();
-        }
+        data.numGPorts = numGPorts;
+        data.numFEPorts = numFEPorts;
         return data;
     }
 
@@ -90,7 +82,7 @@ public class Router : MonoBehaviour {
             {
                 ports[i].Init("g0/" + (i-numFEPorts));
                 ports[i].gameObject.AddComponent<Subnet>();
-                ports[i].GetComponent<Subnet>().CreateConfiguration("192.168." + ((i-numFEPorts) + 1) + ".0", "255.255.255.0", "192.168." + ((i - numFEPorts) + 1) + ".1");
+                ports[i].GetComponent<Subnet>().CreateRouteConfiguration("192.168." + ((i-numFEPorts) + 1) + ".0", "255.255.255.0", "192.168." + ((i - numFEPorts) + 1) + ".1");
                 gameObject.AddComponent<DHCPServer>();
 
             } else
@@ -113,6 +105,10 @@ public class Router : MonoBehaviour {
         }
 
     }
+
+
+    // Update is called once per frame
+    
 
 	// Update is called once per frame
 	void Update () {

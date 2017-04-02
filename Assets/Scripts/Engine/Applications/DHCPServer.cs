@@ -9,6 +9,7 @@ public class DHCPServer : MonoBehaviour {
     public Dictionary<string, bool> IPList = new Dictionary<string, bool>();
     private Subnet subnet;
     public Port port;
+    public int numLeases;
 
     // Use this for initialization
     void Start () {
@@ -51,6 +52,7 @@ public class DHCPServer : MonoBehaviour {
                 }
             case "DHCPRELEASE":
                 {
+                    RemoveLease(packet);
                     break;
                 }
             default:
@@ -99,6 +101,22 @@ public class DHCPServer : MonoBehaviour {
         port.send(packet);
     }
 
+    void RemoveLease(Packet packet)
+    {
+        //strip dhcp from packet
+        DHCP dhcp = packet.gameObject.GetComponent<DHCP>();
+
+        //get lease to remove it
+        string leaseIP = dhcp.leaseAddr;
+        bool value;
+        if (IPList.TryGetValue(leaseIP, out value))
+        {
+            //if it's in the list, set it free
+            IPList[leaseIP] = false;
+            numLeases++;
+        }
+    }
+
     private string GetLease()
     {
 
@@ -108,6 +126,7 @@ public class DHCPServer : MonoBehaviour {
             if (ip != null)
             {
                 IPList[ip] = true;
+                numLeases--;
                 return ip;
             }
             else
@@ -176,5 +195,8 @@ public class DHCPServer : MonoBehaviour {
         {
             //24 bits class A
         }
+
+        numLeases = numclients;
     }
+    
 }

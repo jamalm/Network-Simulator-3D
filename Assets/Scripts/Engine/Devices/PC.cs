@@ -33,18 +33,16 @@ public class PC : MonoBehaviour {
 
     public void Load(PCData data)
     {
-        ping = data.ping;
-        ports[0].Load(data.port);
-        MAC = data.MAC;
         IP = data.IP;
+        subnet.LoadFreshConfig(data.IP, data.mask, data.gate);
     }
     public PCData Save()
     {
         PCData data = new PCData();
-        data.ping = ping;
-        data.port = ports[0].Save();
-        data.MAC = MAC;
+
         data.IP = IP;
+        data.gate = subnet.defaultGateway;
+        data.mask = subnet.mask;
 
         return data;
     }

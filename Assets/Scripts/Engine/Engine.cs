@@ -7,10 +7,12 @@ public class Engine : MonoBehaviour {
     public static Engine engine;
     public GraphicManager graphics;
 
+    //setup info
     public List<PC> pcs = new List<PC>();
     public List<Switch> switches = new List<Switch>();
     public List<Router> routers = new List<Router>();
 	public List<Cable> cables = new List<Cable> ();
+    public List<int> damagedCables = new List<int>();
 
     public PC PCPrefab;
     public Switch SwitchPrefab;
@@ -52,6 +54,8 @@ public class Engine : MonoBehaviour {
         numPCs = ConfigurationManager.config.numPCs;
         numRouters = ConfigurationManager.config.numRouters;
         numSwitches = ConfigurationManager.config.numSwitches;
+        damagedCables = ConfigurationManager.config.brokenCableList;
+
         numCables = (numPCs + numRouters + numSwitches) - 1;
         cableCount = 0;
         connected = false;
@@ -59,6 +63,7 @@ public class Engine : MonoBehaviour {
         Debug.Log("ENGINE: STARTED");
         LoadScene();
         //GetComponent<Layout_Converter>().Scene();
+        
     }
 
     public void LoadScene()
@@ -72,11 +77,18 @@ public class Engine : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        
         float startTime, endtime;
         if (!connected)
         {
+            ConfigSetup();
             connect();
+            Break();
+            SaveConfig();
         }
+
+        
+        /*
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
             startTime = Time.realtimeSinceStartup;
@@ -84,22 +96,19 @@ public class Engine : MonoBehaviour {
             StartCoroutine(PING(pcs[0]));
             endtime = Time.realtimeSinceStartup;
             Debug.LogWarning("Time Taken to Complete Ping: " + (endtime - startTime));
-        }
+        }*/
 
     }
 
     //test case
+    /*
     private IEnumerator PING(PC pc)
     {
         pc.Ping(ping);
         yield return null;
-    }
+    }*/
+    /*
 
-    public PC CreatePC(Transform transform)
-    {
-        PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
-        return pc;
-    }
     public PC LoadPC(Transform transform, PCData load)
     {
         PC pc = (PC)Instantiate(PCPrefab, transform.position, transform.rotation);
@@ -108,36 +117,36 @@ public class Engine : MonoBehaviour {
         return pc;
     }
 
-    public Router CreateRouter(Transform transform, int numPorts)
-    {
-        Router router = (Router)Instantiate(RouterPrefab, transform.position, transform.rotation);
-        for(int i = 0; i < numPorts; i++)
-        {
-            router.ports.Add((Port)Instantiate(PortPrefab, router.transform.position, transform.rotation));
-        }
-        
-
-        return router;
-    }
     public Router LoadRouter(Transform transform, RouterData load, int numPorts)
     {
         Router router = (Router)Instantiate(RouterPrefab, transform.position, transform.rotation);
-        for (int i = 0; i < numPorts; i++)
-        {
-            router.ports.Add((Port)Instantiate(PortPrefab, router.transform.position, transform.rotation));
-        }
-        router.Load(load);
+
         return router;
     }
 
-    public Switch CreateSwitch(Transform transform, int numPorts)
+    public Switch LoadSwitch(Transform transform, SwitchData load, int numPorts)
     {
-        Switch swit = (Switch)Instantiate(SwitchPrefab, transform.position, transform.rotation);
 
+    }*/
 
-        return swit;
+    void ConfigSetup()
+    {
+        for(int i=0;i<pcs.Count;i++)
+        {
+            //add config here from config manager
+            pcs[i].Load(ConfigurationManager.config.GetPCData(i));
+        }
+        for (int i = 0; i < routers.Count; i++)
+        {
+            //add config here from config manager
+            routers[i].Load(ConfigurationManager.config.GetRouterData(i));
+        }
+        for (int i = 0; i < switches.Count; i++)
+        {
+            //add config here from config manager
+            switches[i].Load(ConfigurationManager.config.GetSwitchData(i));
+        }
     }
-
 
     /* For Each Connection Created, there should be a physical cable counter
      * For now it's a manual set up 
@@ -145,7 +154,7 @@ public class Engine : MonoBehaviour {
      * 2 Switches
      * 4 PCs
      */
-    private void connect()
+    void connect()
     {
         connected = true;
         int s = -1;  //for pc/switch dividing 
@@ -254,6 +263,18 @@ public class Engine : MonoBehaviour {
                 }
             }
         }*/
+    }
+
+
+    //this method breaks the connections that are prescribed to be broken
+    void Break()
+    {
+        //for faulty cables
+        for (int i = 0; i < damagedCables.Count; i++)
+        {
+            //for each damaged cable index, set to faulty
+            cables[damagedCables[i]].faulty = true;
+        }
     }
 
     public void LoadPCs()
@@ -469,21 +490,29 @@ public class Engine : MonoBehaviour {
 
     }
 
+    
 
-
-    private void SaveConfig()
+    public void SaveConfig()
     {
-        for(int i=0;i<pcs.Count;i++)
+        ConfigurationManager.config.pcs = new List<PCData>();
+        ConfigurationManager.config.routers = new List<RouterData>();
+        ConfigurationManager.config.switches = new List<SwitchData>();
+        for (int i=0;i<pcs.Count;i++)
         {
+            
             ConfigurationManager.config.pcs.Add(pcs[i].Save());
+            ConfigurationManager.config.numPCs = numPCs;
         }
         for(int i=0;i<routers.Count;i++)
         {
             ConfigurationManager.config.routers.Add(routers[i].Save());
+            ConfigurationManager.config.numRouters = numRouters;
         }
         for(int i = 0; i < switches.Count; i++)
         {
             ConfigurationManager.config.switches.Add(switches[i].Save());
+            ConfigurationManager.config.numSwitches = numSwitches;
         }
+        ConfigurationManager.config.brokenCableList = damagedCables;
     }
 }

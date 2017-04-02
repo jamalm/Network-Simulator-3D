@@ -1,7 +1,9 @@
-﻿public class PCData
+﻿using System;
+
+[Serializable]
+public class PCData
 {
-    public PortData port;
-    public Ping ping;
-    public string MAC;
     public string IP;
+    public string mask;
+    public string gate;
 }
