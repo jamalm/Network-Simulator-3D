@@ -84,11 +84,7 @@ public class PC : MonoBehaviour {
         subnet = gameObject.GetComponent<Subnet>();
         arp = gameObject.GetComponent<ArpUpdate>();
     }
-
-	//
-	void Update (){
-	}
-
+    
     public void SetID(string id)
     {
         this.id = id;
@@ -108,6 +104,7 @@ public class PC : MonoBehaviour {
         ping.count = 0;
         ping.success = 0;
         ping.failure = 0;
+
         //regular expression to validate an ip 
         Regex ipRgx = new Regex(@"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$");
         if(!ipRgx.IsMatch(IP))
@@ -115,31 +112,21 @@ public class PC : MonoBehaviour {
             Debug.LogAssertion(id + ": Invalid IP address; Check format");
             return null;
         }
+
+        //start pinging
         while(ping.count < 4)
         {
-            if (!sendPacket(ping.Echo(IP)) )
+            sendPacket(ping.Echo(IP));
+            ping.count++;
+            /*if (!sendPacket(ping.Echo(IP)))
             {
                 ping.count++;
-                //if there is an active task on this, notify of failure
-                if(GetComponent<TaskWatcher>().isActive())
-                {
-                    GetComponent<TaskWatcher>().PINGFailure();
-                }
             } else
             {
                 ping.count++;
-            }
-            /*else
-            {
-                
-                if(GetComponent<TaskWatcher>().isActive())
-                {
-                    GetComponent<TaskWatcher>().PINGSuccess();
-                }
-            }*/
-            
-            
+            }  */
         }
+        //determine pass/fail
         ping.failure = ping.count - ping.success;
         Debug.LogAssertion("PING: Successful: " + ping.success);
         Debug.LogAssertion("PING: failed: " + ping.failure);
@@ -161,7 +148,7 @@ public class PC : MonoBehaviour {
     /// PING 
     /// ARP 
     /// etc...
-
+    /*
     //ARP
     public void requestARP(Packet arpReq){
         Debug.Log(id + ": Creating an ARP request!");
@@ -177,14 +164,26 @@ public class PC : MonoBehaviour {
 		}
 	}
 
+    */
 
-    //handles the data link layer, assigning mac addresses and forwarding through port
 
-	public bool sendPacket(Packet packet){
+    /// <summary>
+    /// handles the data link layer, 
+    /// assigning mac addresses and 
+    /// forwarding through port
+    /// </summary>
+    /// 
+    /// <param name="packet"></param>
+    /// 
+    /// <returns> true or false depending on success or failure of packet sending</returns>
+    public bool sendPacket(Packet packet){
+
         //check if the port is connected
         if (ports[0].isConnected()) { 
+
             Debug.Log(id + ": port is connected!");
             packet.netAccess.setMAC(MAC, "src");
+
             //check if the network mask is valid
             if (GetComponent<Subnet>().validMask)
             {
@@ -254,25 +253,27 @@ public class PC : MonoBehaviour {
         //if it is a ping 
 		if (packet.type.Equals ("PING"))
         {
+            //if the packet is an ECHO ICMP
             if(packet.GetComponent<ICMP>().type.Equals("ECHO") && packet.GetComponent<ICMP>().ip.Equals(IP))
             {
-                //pingReply (packet.internet.getIP ("src"), packet.netAccess.getMAC ("src"));
+                
                 if (!sendPacket(ping.Reply(packet.internet.getIP("src"))))
                 {
                     //if packet doesn't send...
-                    //TODO do something when the packet doesn't send
                     Debug.LogAssertion(id + ": PACKET FAILED TO SEND");
                 }
             }
+            //if the packet is a REPLY ICMP
             else if(packet.GetComponent<ICMP>().type.Equals("REPLY"))
             {
+                //notify the Ping Application of successful reply
                 ping.success++;
             }
         }
-        //if it is an arp request
+        //if it is an arp packet
 		if (packet.type.Equals ("ARP"))
         {
-            //if its a request
+            //if its a request ARP
             if(packet.GetComponent<ARP>().type.Equals("REQUEST"))
             {
                 //if the request is addressed to me
@@ -286,16 +287,18 @@ public class PC : MonoBehaviour {
                     ports[0].send(arp.Reply(IP, packet.internet.getIP("src"), packet.netAccess.getMAC("src")));
                 }
             }
+            //else if its a REPLY ARP
             else if(packet.GetComponent<ARP>().type.Equals("REPLY"))
             {
+                //update table 
                 Debug.Log(id + ": Processing ARP reply..");
                 ports[0].updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
 
             }
             else
             {
+                //just drop the packet
                 Debug.Log(id + ": dropping ARP request , not my ip!");
-                
             }
 		}
 
@@ -332,11 +335,11 @@ public class PC : MonoBehaviour {
 
 	/////////////////////////////////////////////
 	/// 
-	/// TESING
+	/// TESTING
 	/// ///////////////////////////////////////
 
+    //for hardcoded configs
 	public void TEST(int select){
-        
         switch(select)
         {
             case 1:

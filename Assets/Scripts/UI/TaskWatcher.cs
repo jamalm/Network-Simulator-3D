@@ -24,21 +24,27 @@ public class TaskWatcher : MonoBehaviour {
         return active;
     }
 
-    public void PINGFailure()
+    //when a ping fails, call this
+    public void PINGFailure(GameObject key, GameObject value)
     {
+        //set network to faulty if not already
         if(GameController.gameState.netState != (GameController.NetworkState.FAULTY))
+            GameController.gameState.netState = GameController.NetworkState.FAULTY;
+        
+        //add new task 
+        if(!GameObject.FindGameObjectWithTag("Player").GetComponent<TaskManager>().hasTaskAlready(key, value))
         {
-            GameController.gameState.netState = (GameController.NetworkState)2;
-            GameObject.FindGameObjectWithTag("Player").GetComponent<TaskManager>().AddTask(gameObject, "PING FAILED", "FIX THE PING");
+            GameObject.FindGameObjectWithTag("Player").GetComponent<TaskManager>().AddTask(key, value, "PING FAILED", "FIX THE PING");
         }
     }
 
-    public void PINGSuccess()
+    //when a ping on a device that is being watched passees, call this here
+    public void PINGSuccess(GameObject key, GameObject value)
     {
         if(GameController.gameState.netState != (GameController.NetworkState.ACTIVE))
         {
-            GameController.gameState.netState = (GameController.NetworkState)1;
-            GameObject.FindGameObjectWithTag("Player").GetComponent<TaskManager>().RemoveTask(gameObject, "PING FAILED");
+
+            GameObject.FindGameObjectWithTag("Player").GetComponent<TaskManager>().RemoveTask(key, value);
 
             /*
             List<Task> tasks = GameObject.FindGameObjectWithTag("Player").GetComponent<TaskManager>().tasks;

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Select2D : MonoBehaviour {
@@ -73,10 +72,18 @@ public class Select2D : MonoBehaviour {
             if (success)
             {
                 pc.Success();
+                //remove a task if there is one
+                if (startPC.gameObject.GetComponent<TaskWatcher>().isActive())
+                {
+                    startPC.gameObject.GetComponent<TaskWatcher>().PINGSuccess(startPC.gameObject, endPC.gameObject);
+                }
             }
             else
             {
                 pc.Failure();
+                //add a new task if it is active on this member
+                if (startPC.gameObject.GetComponent<TaskWatcher>().isActive())
+                    startPC.gameObject.GetComponent<TaskWatcher>().PINGFailure(startPC.gameObject, endPC.gameObject);
             }
             yield return new WaitForSeconds(2.0f);
             if (sceneController.GetPC(pc.gameObject) != startPC)

@@ -101,6 +101,7 @@ public class Subnet : MonoBehaviour {
         bool setDefault;
         if(defaultGateway.Equals("0.0.0.0"))
         {
+            //set a default gateway when DHCP fails
             setDefault = true;
             defaultGateway = "";
         } else
@@ -108,19 +109,23 @@ public class Subnet : MonoBehaviour {
             setDefault = false;
         }
         
+        //string conversions to integers
         string net = "";
         string[] ipChunks = dec.Split('.');
         string[] maskChunks = mask.Split('.');
 
-        int[] ipBitChunks = new int[4];
-        int[] maskBitChunks = new int[4];
-        int[] netChunks = new int[4];
+        int[] ipBitChunks = new int[4];//ip
+        int[] maskBitChunks = new int[4];//mask
+        int[] netChunks = new int[4];   //resulting network
 
+        //loop 4 times for each octet of the address
         for (int i = 0; i < 4; i++)
         {
+            //parsing strings into integers
             ipBitChunks[i] = int.Parse(ipChunks[i]);
             maskBitChunks[i] = int.Parse(maskChunks[i]);
 
+            //network = ip AND mask
             netChunks[i] = ipBitChunks[i] & maskBitChunks[i];
 
 
@@ -148,9 +153,11 @@ public class Subnet : MonoBehaviour {
 
     private string ResolveBroadcast(string ip)
     {
+        //split strings
         string[] ipChunks = ip.Split('.');
         string[] maskChunks = mask.Split('.');
 
+        //storage for mask bits, ip bits and the broadcast address in bits
         int[] maskBitChunks = new int[4];
         int[] ipBitChunks = new int[4];
         int[] broadChunks = new int[4];
@@ -159,17 +166,25 @@ public class Subnet : MonoBehaviour {
 
         for(int i=0; i<4; i++)
         {
+            //parsing the strings
             maskBitChunks[i] = int.Parse(maskChunks[i]);
             ipBitChunks[i] = int.Parse(ipChunks[i]);
 
             //invert mask
             maskBitChunks[i] = ~maskBitChunks[i];
+
             //do OR operation on ip with inverse mask
             int broad = ipBitChunks[i] | (maskBitChunks[i]);
 
+            //strip the 24-bit binary string down to an 8-bit string
+            //convert to base-2 binary string
             string val = Convert.ToString(broad, 2);
+            //get the substring (last 8 bits)
             val = val.Substring(Math.Max(val.Length - 8, 0)).PadLeft(8, '0');
+            //convert binary string to integer
             broadChunks[i] = Convert.ToInt32(val, 2);
+
+            //concatenation
             if (i != 3)
             {
                 broadcast += broadChunks[i] + ".";
@@ -198,6 +213,12 @@ public class Subnet : MonoBehaviour {
                 if (c == '1') CIDR++;
         }
     }
+
+
+
+
+
+
 
     public void SetConfiguration(DHCP dhcp)
     {
@@ -257,6 +278,7 @@ public class Subnet : MonoBehaviour {
     public void LoadFreshConfig(string ip, string mask, string gate)
     {
         this.mask = mask;
+        validMask = ValidateMask(mask);
         network = ResolveNetwork(ip);
         defaultGateway = gate;
         broadcast = ResolveBroadcast(defaultGateway);

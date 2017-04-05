@@ -19,7 +19,7 @@ public class Switch : MonoBehaviour {
 	public List<Port> ports;        //list of ports available
     public int numFEPorts = 8;            //number of ports to be assigned
     public int numGPorts = 1;              
-	private List <string> macTable; //the mac table for forwarding packets
+	public List <string> macTable; //the mac table for forwarding packets
     private string id;
     GameObject engine;
     float timeElapsed = 0.0f;
@@ -85,10 +85,11 @@ public class Switch : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         UpdateMacTable();
-        if (timeElapsed > 3.0f)
+        if (timeElapsed > 3.0f && timeElapsed < 4.0f)
         {
             GameController.gameState.netState = GameController.NetworkState.ACTIVE;
-        } timeElapsed += Time.deltaTime;
+        }
+        timeElapsed += Time.deltaTime;
 	}
 
     public void SetID(string id)
@@ -188,9 +189,12 @@ public class Switch : MonoBehaviour {
                 }
             }
         }
-        
-        
     }
+
+    public void RemoveEntry(Port port)
+    {
+        macTable.Remove(port.getMAC());
+    } 
 
     //fetch new port to be attached to external device
     public Port getNewPort(string type) 
@@ -221,13 +225,29 @@ public class Switch : MonoBehaviour {
 
     //send packet to all devices on LAN
 	private bool broadcast(Packet packet, Port incomingPort) {
+        
 		for (int i = 0; i < ports.Count; i++) {
-            //if port is on the same vlan as the incoming one; VLANS YEAH
-            if(ports[i].link.vlan == incomingPort.link.vlan || ports[i].link.type.Equals("trunk"))
+            if (ports[i].isConnected())
             {
-                if (ports[i].isConnected() && ports[i] != incomingPort)
+                //if port is on the same vlan as the incoming one; VLANS YEAH
+                if (ports[i].link.vlan == incomingPort.link.vlan || ports[i].link.type.Equals("trunk"))
                 {
-                    ports[i].send(packet);
+                    if (ports[i] != incomingPort)
+                    {
+                        ports[i].send(packet);
+                    }
+                }
+                //if the packet has come from a trunk link
+                else if (packet.gameObject.GetComponent<Link>())
+                {
+                    Link link = packet.GetComponent<Link>();
+                    if (link.vlan == 0)
+                    {
+                        if (ports[i] != incomingPort)
+                        {
+                            ports[i].send(packet);
+                        }
+                    }
                 }
             }
 		}

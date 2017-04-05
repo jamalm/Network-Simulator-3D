@@ -151,13 +151,16 @@ public class Router : MonoBehaviour {
             port.send(arpReq);
         }
     }
-    private void replyARP(Packet arpRep, Port port)
+    private bool replyARP(Packet arpRep, Port port)
     {
         Debug.Log("Replying to ARP!");
 
         if (port.isConnected())
         {
-            port.send(arpRep);
+            return port.send(arpRep);
+        } else
+        {
+            return false;
         }
     }
 
@@ -197,6 +200,12 @@ public class Router : MonoBehaviour {
 	public void handlePacket(Packet packet, Port incomingPort) {
 		Debug.Log ("ROUTER: RECEIVED PACKET");
 
+        //add incoming device's MAC to port
+        if(!incomingPort.isListed(packet.internet.getIP("src")))
+        {
+            incomingPort.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
+        }
+
         //for dhcp
         if (packet.type.Equals("DHCP"))
         {
@@ -213,13 +222,20 @@ public class Router : MonoBehaviour {
         if(packet.type.Equals("PING"))
         {
             
-            //get dest ip
+            //get destination ip    for ICMP currently
             string destIp = packet.GetComponent<ICMP>().ip;
             //get network of dest ip
             string destNetwork = incomingPort.GetComponent<Subnet>().GetNetworkFromIP(destIp);
+            //fetches outgoing port based on route returned from routing table
             Port outPort = GetRoutePort(destNetwork);
+            //if the port does not have the mac address, request it then send it after
+            if(!outPort.isListed(destIp))
+            {
+                requestARP(arp.Request(outPort.GetComponent<Subnet>().defaultGateway, destIp), outPort);
+            }
             if(outPort != null)
             {
+                //set the new destination ip
                 packet.internet.setIP(destIp, "dest");
                 outPort.send(packet);
             } else
@@ -232,7 +248,21 @@ public class Router : MonoBehaviour {
         //if incoming packet is an ARP request addressed to this IP , return a reply
         if(packet.type.Equals("ARP") && packet.internet.getIP("dest").Equals(incomingPort.GetComponent<Subnet>().defaultGateway))
         {
-            replyARP(arp.Reply(incomingPort.GetComponent<Subnet>().defaultGateway, packet.internet.getIP("src"), packet.netAccess.getMAC("src")) ,incomingPort);
+            //if this is a reply to this ip, add it to the incoming port's list
+            if(packet.GetComponent<ARP>().type.Equals("REPLY"))
+            {
+                incomingPort.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
+            }
+            else if(!replyARP(arp.Reply(incomingPort.GetComponent<Subnet>().defaultGateway, packet.internet.getIP("src"), packet.netAccess.getMAC("src")) ,incomingPort))
+            {
+                if(!incomingPort.isConnected())
+                {
+                    Debug.Log(id + ": Port is not connected, cant reply to ARP");
+                } else
+                {
+                    requestARP(arp.Request(incomingPort.GetComponent<Subnet>().defaultGateway, packet.internet.getIP("src")), incomingPort);
+                }
+            }
         }
         /*
         for(int i = 0; i < routingTable.Count; i++)

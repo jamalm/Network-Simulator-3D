@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 
 public class DHCP : MonoBehaviour{
+    /*******************************************************************************/
+    /* Component to be attached to a packet being sent as a DHCP datagram
+    /* Allows devices to distinguish packet as a DHCP packet.
+     * Contains information for the client and the server to communicate also
+    /***********************************************************/
 
     public string type; //type of dhcp message
     public string cliMac;   //clients mac address

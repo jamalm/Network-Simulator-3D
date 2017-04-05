@@ -12,6 +12,7 @@ public class SelectObject : MonoBehaviour {
     public EditScreen editScreen;
     public PCConfig pcconfig;
     public RouterConfig routerconfig;
+    public SwitchConfig switchConfig;
 
     public Texture2D crosshairTexture;
 
@@ -82,7 +83,7 @@ public class SelectObject : MonoBehaviour {
                 editWindow.SetActive(true);
                 editScreen = gameObject.GetComponentInChildren<EditScreen>();
                 //pass in switch as inspected object
-                //ConfigurationManager.config.RunSwitch(obj.GetComponent<Switch>());
+                switchConfig.UpdateSwitch(obj.GetComponent<Switch>());
                 editScreen.OpenScreen("switch", obj);
             }
             else if (obj.CompareTag("Router"))

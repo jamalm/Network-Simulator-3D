@@ -24,10 +24,11 @@ public class ConfigurationManager : MonoBehaviour
     public List<PCData> pcs = new List<PCData>();
     public List<RouterData> routers = new List<RouterData>();
     public List<SwitchData> switches = new List<SwitchData>();
-    public List<int> brokenCableList;
+    public List<int> brokenCableList = new List<int>();
     public int numPCs;
     public int numRouters;
     public int numSwitches;
+    public List<Task> tasks = new List<Task>();
 
     //redundant
     public PCData inspectorPC;
@@ -75,7 +76,10 @@ public class ConfigurationManager : MonoBehaviour
     {
         return routers[index];
     }
-
+    public List<Task> GetTasks()
+    {
+        return tasks;
+    }
 
 
 
@@ -149,7 +153,7 @@ class Configuration
     List<int> brokenCables;
 
     //constructor with tasks 
-    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<Task> tasks)
+    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken, List<Task> tasks)
     {
         //constructor
         this.pcs = pcs;
@@ -159,6 +163,8 @@ class Configuration
         this.switches = switches;
 
         this.tasks = tasks;
+
+        brokenCables = broken;
     }
 
     //constructor without tasks
@@ -172,7 +178,7 @@ class Configuration
         this.switches = switches;
 
         tasks = null;
-        brokenCables = broken;    //for now they are null
+        brokenCables = broken;    
     }
 
     public List<PCData> GetPCs()

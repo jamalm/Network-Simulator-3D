@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 
 public class Engine : MonoBehaviour {
 
-    public static Engine engine;
+    //public static Engine engine;
     public GraphicManager graphics;
+    public bool editing = false;
 
     //setup info
     public List<PC> pcs = new List<PC>();
@@ -37,15 +37,6 @@ public class Engine : MonoBehaviour {
 
     void Awake()
     {
-        if (engine == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            engine = this;
-        }
-        else if (engine != this)
-        {
-            Destroy(gameObject);
-        }
 
     }
 
@@ -81,9 +72,12 @@ public class Engine : MonoBehaviour {
         float startTime, endtime;
         if (!connected)
         {
-            ConfigSetup();
+            if(!editing)
+            {
+                ConfigSetup();
+            }
             connect();
-            Break();
+            
             SaveConfig();
         }
 
@@ -179,8 +173,9 @@ public class Engine : MonoBehaviour {
                     if (switches.Count > 1)
                     {
                         //if switch has gotten it's share of pcs, move onto the next switch
-                        if (p % switches.Count == 0)
+                        if (p % (pcs.Count/switches.Count) == 0)
                         {
+                            
                             if (s != switches.Count - 1)
                             {
                                 s++;

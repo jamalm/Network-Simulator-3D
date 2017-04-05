@@ -34,6 +34,7 @@ public class PauseGame : MonoBehaviour
         Debug.Log("Game Paused: " + paused);
         if (paused == true)
         {
+            GameController.gameState.currentState = GameController.state.PAUSEGAME;
             GetComponent<Movement>().enabled = false;
             HUD.SetActive(false);
             selectable.enabled = false;
@@ -46,7 +47,8 @@ public class PauseGame : MonoBehaviour
         }
         else
         {
-            if(!flatSceneEnabled)
+            GameController.gameState.currentState = GameController.state.STARTGAME;
+            if (!flatSceneEnabled)
             {
                 GetComponent<Movement>().enabled = true;
                 HUD.SetActive(true);

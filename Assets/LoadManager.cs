@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoadManager : MonoBehaviour {
     
-    
+    /*
     
 	// Use this for initialization
 	void Start () {
@@ -26,5 +24,5 @@ public class LoadManager : MonoBehaviour {
     {
         Engine.engine.GetComponent<Layout_Converter>().inspector = false;
         SceneManager.LoadScene(1);
-    }
+    }*/
 }

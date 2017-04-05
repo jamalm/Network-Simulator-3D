@@ -172,6 +172,10 @@ public class Port : MonoBehaviour {
 	public string getEndMAC(){
 		return endPortMAC;
 	}
+    public Port GetEnd()
+    {
+        return endPort;
+    }
 
     public string getMAC() { return mac; }
 
@@ -344,6 +348,7 @@ public class Port : MonoBehaviour {
                         //bind mac address of pc and store in switch port
                         setMAC(endPort.getPC().getMAC());
                         link.type = "access";
+                        endPort.link.type = link.type;
                         link.vlan = endPort.link.vlan;
                         break;
                     }
@@ -368,17 +373,16 @@ public class Port : MonoBehaviour {
         endPort = null;
         //TODO need to remove subnet details from routing table
         //TODO same here
-
-		setMAC(null);
-        link.vlan = 0;
-        link.type = null;
-        if(device.Equals("switch"))
+        if (device.Equals("switch"))
         {
             endPortMAC = null;
-        } 
+            GetComponentInParent<Switch>().RemoveEntry(this);
+        }
+        setMAC(null);
+        
 	}
 
-
+    /*
     private bool Animate(Packet packet)
     {
         //animate packet being sent across the wire
@@ -462,6 +466,6 @@ public class Port : MonoBehaviour {
         }
 
         return true;
-    }
+    }*/
 }
 

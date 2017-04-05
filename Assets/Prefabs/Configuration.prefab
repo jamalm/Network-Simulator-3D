@@ -54,11 +54,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loader: {fileID: 114305832979915194}
-  filename: 
-  brokenCableList: 0100000004000000
+  filename: /test.ns
+  pcs: []
+  routers: []
+  switches: []
+  brokenCableList: 
   numPCs: 4
   numRouters: 1
   numSwitches: 2
+  inspectorPC:
+    IP: 
+    mask: 
+    gate: 
+  inspectorSwitch:
+    numFEPorts: 0
+    numGPorts: 0
+  inspectorRouter:
+    numFEPorts: 0
+    numGPorts: 0
   currentInspectable: 
 --- !u!114 &114305832979915194
 MonoBehaviour:

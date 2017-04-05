@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
     public enum state
@@ -6,8 +7,8 @@ public class GameController : MonoBehaviour {
         
         MENU,           //Before game start
         STARTGAME,      //load up engine etc
+        CHALLENGE,      //break the network
         PAUSEGAME,      //Game is Paused
-        CONTINUEGAME,   //Game is Resumed
         ENDGAME,        //Game Objective achieved
         DEFAULT        //should never happen
     };
@@ -20,15 +21,12 @@ public class GameController : MonoBehaviour {
         INACTIVE       //network is down
     }
 
-    public static GameController gameState;
-    public GameObject engine;
-    public state currentState;
-    public NetworkState netState;
+    public static GameController gameState; //static reference
+    public Scene CurrentScene;              //Currently loaded scene
+    public GameObject engine;               //game engine
+    public state currentState;              //game state
+    public NetworkState netState;           //network state
 
-    private bool paused;
-
-    //private bool load;          //for loading instructions per game state
-    
 
     //singleton pattern
     private void Awake()
@@ -37,6 +35,8 @@ public class GameController : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             gameState = this;
+            currentState = state.MENU;
+            
         }
         else if(gameState != this)
         {
@@ -46,8 +46,7 @@ public class GameController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        paused = false;
-        //load = false;
+
         
     }
 	
@@ -57,23 +56,26 @@ public class GameController : MonoBehaviour {
         {
             case state.MENU:
                 {
+                    netState = NetworkState.INACTIVE;
                     break;
                 }
             case state.STARTGAME:
+                {
+                    
+                    break;
+                }
+            case state.CHALLENGE:
                 {
                     break;
                 }
             case state.PAUSEGAME:
                 {
-                    paused = !paused;
-                    break;
-                }
-            case state.CONTINUEGAME:
-                {
+
                     break;
                 }
             case state.ENDGAME:
                 {
+                    netState = NetworkState.INACTIVE;
                     break;
                 }
             case state.DEFAULT:
@@ -104,8 +106,11 @@ public class GameController : MonoBehaviour {
         }
 	}
 
-    public void SwitchState(int state)
+    public void UpdateScene(Scene scene)
     {
-        currentState = (state)state;
+        //update the current scene and change game state
+        CurrentScene = scene;
+        if (!CurrentScene.name.Equals("Menu"))
+            currentState = state.STARTGAME;
     }
 }

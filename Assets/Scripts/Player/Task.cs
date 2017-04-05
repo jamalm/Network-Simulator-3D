@@ -3,11 +3,11 @@
 public class Task : MonoBehaviour
 {
 
-    private bool completed;
+    bool completed;
     public string taskName;
     public string desc;
     public GameObject KeyObjective;
-
+    public GameObject ValueObjective;
     private void Start()
     {
         completed = false;
