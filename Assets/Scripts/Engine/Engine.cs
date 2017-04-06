@@ -6,6 +6,7 @@ public class Engine : MonoBehaviour {
     //public static Engine engine;
     public GraphicManager graphics;
     public bool editing = false;
+    bool challengeStarted = false;
 
     //setup info
     public List<PC> pcs = new List<PC>();
@@ -42,6 +43,9 @@ public class Engine : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        Debug.Log("Engine: Loading File.." + ConfigurationManager.config.filename);
+        if(!editing)
+            ConfigurationManager.config.Load(ConfigurationManager.config.filename);
         numPCs = ConfigurationManager.config.numPCs;
         numRouters = ConfigurationManager.config.numRouters;
         numSwitches = ConfigurationManager.config.numSwitches;
@@ -72,16 +76,16 @@ public class Engine : MonoBehaviour {
         float startTime, endtime;
         if (!connected)
         {
-            if(!editing)
+
+            connect();
+            if (!editing)
             {
                 ConfigSetup();
             }
-            connect();
-            
             SaveConfig();
         }
 
-        
+
         /*
 		//TODO press 1 to activate ping! 
 		if (Input.GetKeyUp (KeyCode.Keypad1)) {
@@ -91,7 +95,8 @@ public class Engine : MonoBehaviour {
             endtime = Time.realtimeSinceStartup;
             Debug.LogWarning("Time Taken to Complete Ping: " + (endtime - startTime));
         }*/
-
+        if(GameController.gameState.currentState.Equals(GameController.state.CHALLENGE))
+            StartChallenge();
     }
 
     //test case
@@ -509,5 +514,14 @@ public class Engine : MonoBehaviour {
             ConfigurationManager.config.numSwitches = numSwitches;
         }
         ConfigurationManager.config.brokenCableList = damagedCables;
+    }
+
+    public void StartChallenge()
+    {
+        if(!challengeStarted)
+        {
+            challengeStarted = true;
+            Break();
+        }
     }
 }

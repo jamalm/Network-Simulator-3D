@@ -18,7 +18,8 @@ public class Switch : MonoBehaviour {
 	//private Router router;          //router connected
 	public List<Port> ports;        //list of ports available
     public int numFEPorts = 8;            //number of ports to be assigned
-    public int numGPorts = 1;              
+    public int numGPorts = 1;
+    public List<int> vlans = new List<int>();           
 	public List <string> macTable; //the mac table for forwarding packets
     private string id;
     GameObject engine;
@@ -33,17 +34,26 @@ public class Switch : MonoBehaviour {
         macTable = data.mactable;*/
         numFEPorts = data.numFEPorts;
         numGPorts = data.numGPorts;
+        vlans = data.vlanmaps;
+        //update vlans
+        for(int i=0;i<ports.Count;i++)
+        {
+            ports[i].ChangeVLAN(vlans[i]);
+        }
     }
     public SwitchData Save()
     {
         SwitchData data = new SwitchData();
-        /*data.mactable = macTable;
-        for(int i=0;i<ports.Count;i++)
+        if (vlans.Count != 0)
+            vlans.Clear();
+
+        for (int i=0; i<ports.Count;i++)
         {
-            data.ports[i] = ports[i].Save();
-        }*/
+            vlans.Add(ports[i].link.vlan);
+        }
         data.numGPorts = numGPorts;
         data.numFEPorts = numFEPorts;
+        data.vlanmaps = vlans;
         return data;
     }
 
@@ -85,7 +95,7 @@ public class Switch : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         UpdateMacTable();
-        if (timeElapsed > 3.0f && timeElapsed < 4.0f)
+        if (timeElapsed > 3.0f && timeElapsed < 5.0f)
         {
             GameController.gameState.netState = GameController.NetworkState.ACTIVE;
         }

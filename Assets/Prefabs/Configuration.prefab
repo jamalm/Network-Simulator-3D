@@ -59,9 +59,10 @@ MonoBehaviour:
   routers: []
   switches: []
   brokenCableList: 
-  numPCs: 4
-  numRouters: 1
-  numSwitches: 2
+  numPCs: 5
+  numRouters: 0
+  numSwitches: 1
+  tasks: []
   inspectorPC:
     IP: 
     mask: 

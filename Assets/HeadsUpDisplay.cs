@@ -34,6 +34,9 @@ public class HeadsUpDisplay : MonoBehaviour {
 
 	}
 
+    /* TIME STUFF 
+     */
+
     public void startTimer()
     {
         timerStarted = true;
@@ -54,7 +57,7 @@ public class HeadsUpDisplay : MonoBehaviour {
         while(timerStarted)
         {
             //if the game is not paused
-            if(GetComponent<GameController>().currentState != GameController.state.PAUSEGAME)
+            if(GameController.gameState.currentState != GameController.state.PAUSEGAME)
                 seconds++; 
 
             yield return new WaitForSecondsRealtime(1);

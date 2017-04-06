@@ -1,30 +1,63 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseGame : MonoBehaviour
 {
 
     private bool paused;
+    public bool tutorial;
+    private bool init;
     public GameObject pausePanel;
     public LookAtMouse LookAround;
     public GameObject HUD;
+    public GameObject TutorialPanel;
     private SelectObject selectable;
     public bool flatSceneEnabled;
+    public GameController.state prevState;
 
     // Use this for initialization
     void Start()
     {
         flatSceneEnabled = false;
         paused = false;
+        tutorial = false;
+        init = true;
         LookAround = GetComponent<LookAtMouse>();
         selectable = GetComponent<SelectObject>();
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Escape))
+        if(init)
         {
-            UnPause();
+            //if this is the first level
+            if (SceneManager.GetActiveScene().name.Equals("Problem1"))
+            {
+                TutorialPanel.SetActive(true);
+                EnterTutorialScreen();
+            }
+            init = false;
+        }
+
+        if (!tutorial)
+        {
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                UnPause();
+            }
+            if(!paused)
+            {
+                if (Input.GetKeyUp(KeyCode.Space))
+                {
+                    //break the network
+                    GameController.gameState.currentState = GameController.state.CHALLENGE;
+                    GameObject.FindGameObjectWithTag("challenge").SetActive(false);
+                }
+            }
+
         }
 
     }
@@ -34,6 +67,7 @@ public class PauseGame : MonoBehaviour
         Debug.Log("Game Paused: " + paused);
         if (paused == true)
         {
+            prevState = GameController.gameState.currentState;
             GameController.gameState.currentState = GameController.state.PAUSEGAME;
             GetComponent<Movement>().enabled = false;
             HUD.SetActive(false);
@@ -47,7 +81,7 @@ public class PauseGame : MonoBehaviour
         }
         else
         {
-            GameController.gameState.currentState = GameController.state.STARTGAME;
+            GameController.gameState.currentState = prevState;
             if (!flatSceneEnabled)
             {
                 GetComponent<Movement>().enabled = true;
@@ -77,5 +111,35 @@ public class PauseGame : MonoBehaviour
     {
         Cursor.visible = true;
         Time.timeScale = 1.0f;
+    }
+
+    public void ExitTutorialScreen()
+    {
+        paused = false;
+        
+        GameController.gameState.currentState = prevState;
+        tutorial = false;
+        GetComponent<Movement>().enabled = true;
+        HUD.SetActive(true);
+        selectable.enabled = true;
+        LookAround.enabled = true;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1.0f;
+        pausePanel.SetActive(false);
+        Time.timeScale = 1.0f;
+    }
+    public void EnterTutorialScreen()
+    {
+        tutorial = true;
+        prevState = GameController.gameState.currentState;
+        GameController.gameState.currentState = GameController.state.PAUSEGAME;
+        GetComponent<Movement>().enabled = false;
+        HUD.SetActive(false);
+        selectable.enabled = false;
+        LookAround.enabled = false;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 0.0f;
     }
 }

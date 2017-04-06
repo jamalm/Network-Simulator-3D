@@ -199,12 +199,12 @@ public class Router : MonoBehaviour {
 	 */
 	public void handlePacket(Packet packet, Port incomingPort) {
 		Debug.Log ("ROUTER: RECEIVED PACKET");
-
+        /*
         //add incoming device's MAC to port
         if(!incomingPort.isListed(packet.internet.getIP("src")))
         {
             incomingPort.updateARPTable(packet.internet.getIP("src"), packet.netAccess.getMAC("src"));
-        }
+        }*/
 
         //for dhcp
         if (packet.type.Equals("DHCP"))

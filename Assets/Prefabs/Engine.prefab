@@ -54,10 +54,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphics: {fileID: 114704294734433592}
+  editing: 1
   pcs: []
   switches: []
   routers: []
   cables: []
+  damagedCables: 
   PCPrefab: {fileID: 114000012950487346, guid: 4dc6f3b8a04a46e4099cec3e3fe3b5c0, type: 2}
   SwitchPrefab: {fileID: 114000010946747468, guid: 9cf3492202babfb4198a0de1493fbba2,
     type: 2}

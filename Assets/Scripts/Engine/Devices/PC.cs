@@ -27,7 +27,7 @@ public class PC : MonoBehaviour {
 
     //for dhcp settings
     public bool dhcpEnabled;
-    
+    public bool watched = false;
 
     
 
@@ -35,6 +35,12 @@ public class PC : MonoBehaviour {
     {
         IP = data.IP;
         subnet.LoadFreshConfig(data.IP, data.mask, data.gate);
+        watched = data.watched;
+        //if we are being watched, add a task watcher
+        if (watched)
+        {
+            gameObject.GetComponent<TaskWatcher>().active = true;
+        }
     }
     public PCData Save()
     {
@@ -43,7 +49,7 @@ public class PC : MonoBehaviour {
         data.IP = IP;
         data.gate = subnet.defaultGateway;
         data.mask = subnet.mask;
-
+        data.watched = watched;
         return data;
     }
 
@@ -83,6 +89,7 @@ public class PC : MonoBehaviour {
         ping = gameObject.GetComponent<Ping>();
         subnet = gameObject.GetComponent<Subnet>();
         arp = gameObject.GetComponent<ArpUpdate>();
+
     }
     
     public void SetID(string id)

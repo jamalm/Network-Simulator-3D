@@ -6,7 +6,7 @@ public class TaskWatcher : MonoBehaviour {
     private GameObject device;
 	// Use this for initialization
 	void Start () {
-        active = false;
+        
 	}
 	
 	// Update is called once per frame

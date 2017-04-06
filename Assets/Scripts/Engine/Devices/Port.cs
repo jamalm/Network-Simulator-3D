@@ -230,8 +230,13 @@ public class Port : MonoBehaviour {
 
     public virtual void updateARPTable(string IP, string MAC)
     {
-        Debug.Log("PORT: Updated ARPTable!");
-        arpTable.Add(IP, MAC);
+        
+        if(!isListed(IP))
+        {
+            Debug.Log("PORT: Updated ARPTable!");
+            arpTable.Add(IP, MAC);
+        } else Debug.Log("PORT: Arptable entry exists!");
+
     }
 
 	// checks if the packet's destination ip has a mac address in the ARP table
@@ -467,5 +472,11 @@ public class Port : MonoBehaviour {
 
         return true;
     }*/
+
+    public void ChangeVLAN(int newVlan)
+    {
+        link.vlan = newVlan;
+        endPort.link.vlan = newVlan;
+    }
 }
 

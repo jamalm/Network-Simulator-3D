@@ -27,7 +27,7 @@ public class TaskManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        hud = GameController.gameState.gameObject.GetComponent<HeadsUpDisplay>();
+        hud = GetComponent<HeadsUpDisplay>();
         //if tasks are preloaded, set last task added as the current task
         if (tasks.Count != 0)
         {

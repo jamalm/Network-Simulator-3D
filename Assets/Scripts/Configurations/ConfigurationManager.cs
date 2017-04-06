@@ -29,6 +29,7 @@ public class ConfigurationManager : MonoBehaviour
     public int numRouters;
     public int numSwitches;
     public List<Task> tasks = new List<Task>();
+    public List<int> watchers = new List<int>();
 
     //redundant
     public PCData inspectorPC;
@@ -48,7 +49,7 @@ public class ConfigurationManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        Load(filename);
+        //Load(filename);
     }
 
     private void Start()
@@ -88,7 +89,7 @@ public class ConfigurationManager : MonoBehaviour
     //save game here
     public void Save(string filename)
     {
-        loader.Save(filename, pcs, routers, switches, brokenCableList);
+        loader.Save(filename, pcs, routers, switches, brokenCableList, watchers);
     }
     //might be used in the future
     public List<string> LoadAllFiles()
@@ -115,6 +116,7 @@ public class ConfigurationManager : MonoBehaviour
             numSwitches = switches.Count;
             numRouters = routers.Count;
             brokenCableList = data.GetBrokenCables();
+            watchers = data.GetWatchers();
         }
     }
 
@@ -151,6 +153,7 @@ class Configuration
     //misc data
     List<Task> tasks;
     List<int> brokenCables;
+    List<int> watchers;
 
     //constructor with tasks 
     public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken, List<Task> tasks)
@@ -168,7 +171,7 @@ class Configuration
     }
 
     //constructor without tasks
-    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken)
+    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken, List<int> watchers)
     {
         //constructor
         this.pcs = pcs;
@@ -176,6 +179,8 @@ class Configuration
         this.routers = routers;
 
         this.switches = switches;
+
+        this.watchers = watchers;
 
         tasks = null;
         brokenCables = broken;    
@@ -200,5 +205,9 @@ class Configuration
     public List<Task> GetTasks()
     {
         return tasks;
+    }
+    public List<int> GetWatchers()
+    {
+        return watchers;
     }
 }

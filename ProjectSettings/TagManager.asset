@@ -14,6 +14,10 @@ TagManager:
   - EditWindow
   - Cable
   - Timer
+  - UITaskList
+  - HUD
+  - TutorialPanel
+  - challenge
   layers:
   - Default
   - TransparentFX
