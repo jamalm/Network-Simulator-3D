@@ -14,6 +14,7 @@ public class HeadsUpDisplay : MonoBehaviour {
     public List<Text> tasks = new List<Text>();
     public Text textPrefab;
     public GameObject UITaskList;
+    public GameObject GameOver;
 
     private void Awake()
     {
@@ -46,6 +47,8 @@ public class HeadsUpDisplay : MonoBehaviour {
     {
         timerStarted = false;
         seconds = 0;
+        GameOver.SetActive(true);
+        GetComponent<PauseGame>().EndGame();
     }
     void DisplayTimer()
     {

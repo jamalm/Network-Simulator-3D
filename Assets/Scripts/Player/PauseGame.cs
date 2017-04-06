@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class PauseGame : MonoBehaviour
 {
@@ -111,6 +112,16 @@ public class PauseGame : MonoBehaviour
     {
         Cursor.visible = true;
         Time.timeScale = 1.0f;
+    }
+
+    public void EndGame()
+    {
+        GetComponent<Movement>().enabled = false;
+        selectable.enabled = false;
+        LookAround.enabled = false;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+        Time.timeScale = 0.0f;
     }
 
     public void ExitTutorialScreen()

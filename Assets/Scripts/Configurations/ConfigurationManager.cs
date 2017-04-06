@@ -89,7 +89,7 @@ public class ConfigurationManager : MonoBehaviour
     //save game here
     public void Save(string filename)
     {
-        loader.Save(filename, pcs, routers, switches, brokenCableList, watchers);
+        loader.Save(filename, pcs, routers, switches, brokenCableList, watchers,tasks);
     }
     //might be used in the future
     public List<string> LoadAllFiles()
@@ -117,6 +117,7 @@ public class ConfigurationManager : MonoBehaviour
             numRouters = routers.Count;
             brokenCableList = data.GetBrokenCables();
             watchers = data.GetWatchers();
+            tasks = data.GetTasks();
         }
     }
 
@@ -156,7 +157,7 @@ class Configuration
     List<int> watchers;
 
     //constructor with tasks 
-    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken, List<Task> tasks)
+    public Configuration(List<PCData> pcs, List<SwitchData> switches, List<RouterData> routers, List<int> broken, List<int> watched,  List<Task> tasks)
     {
         //constructor
         this.pcs = pcs;

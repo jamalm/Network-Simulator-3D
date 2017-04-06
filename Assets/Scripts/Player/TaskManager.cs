@@ -69,6 +69,7 @@ public class TaskManager : MonoBehaviour {
             }
         }
     }
+    
 
     public bool hasTaskAlready(GameObject key, GameObject value)
     {

@@ -131,6 +131,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011208976102, guid: de810dc89457788499dd9fbb8c4db11d,
+        type: 2}
+      propertyPath: filename
+      value: /Problem2.ns
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: de810dc89457788499dd9fbb8c4db11d, type: 2}
   m_IsPrefabParent: 0
@@ -172,6 +177,11 @@ Prefab:
     - target: {fileID: 4000010669654198, guid: a8598c09df00f8247a5cd5cf8ae5ceb7, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012945650840, guid: a8598c09df00f8247a5cd5cf8ae5ceb7,
+        type: 2}
+      propertyPath: editing
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a8598c09df00f8247a5cd5cf8ae5ceb7, type: 2}
@@ -277,7 +287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa2eaf356d092d41918ba4935320621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 0}
+  tutImgs: []
+  tutMan: {fileID: 0}
   currentState: 2
   netState: 0
 --- !u!4 &1364868506

@@ -82,7 +82,7 @@ public class Engine : MonoBehaviour {
             {
                 ConfigSetup();
             }
-            SaveConfig();
+            //SaveConfig();
         }
 
 
